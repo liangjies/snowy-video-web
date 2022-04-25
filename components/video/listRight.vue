@@ -42,7 +42,7 @@
 		},
 		mounted() {
 			this.videoInfo = this.video
-			this.avatar = this.fileUrl + this.video.avatar
+			this.avatar = this.video.avatar
 			this.getFav()
 		},
 		props: ['index', 'video'],
@@ -127,12 +127,11 @@
 					method: 'POST',
 					header: {
 						'content-type': 'application/json',
-						'userId': this.userInfo.id,
-						'userToken': this.userInfo.userToken
+						'x-token': getApp().globalData.getGlobalToken()
 					},
 					success: (res) => {
 						this.clickLoading = false
-						if (res.data.status === 200) {
+						if (res.data.code === 200) {
 							this.isFav = !this.isFav;
 							if (this.isFav) {
 								this.videoInfo.likeCounts++

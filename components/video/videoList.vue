@@ -53,9 +53,13 @@
 				uni.request({
 					url: this.baseUrl + '/video/showAllVideos',
 					method: "POST",
+					header: {
+						'content-type': 'application/json',
+						'x-token': getApp().globalData.getGlobalToken()
+					},
 					success: (res) => {
-						if (res.data.status === 200) {
-							this.videoList = res.data.data
+						if (res.data.code === 200) {
+							this.videoList = res.data.data.list
 						}
 					}
 				})

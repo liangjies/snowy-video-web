@@ -3,7 +3,7 @@
 		<block v-for="item in videoList" :key="item.id">
 			<list-item :video="item">
 				<block slot="image">
-					<view class="image" :style="{'background-image':'url(' + fileUrl + item.coverPath + ')'}"></view>
+					<view class="image" :style="{backgroundImage:'url(' + fileUrl + encodeURIComponent(item.coverPath) +  ')'}"></view>
 				</block>
 				<block slot="seconds">
 					{{Math.floor(item.videoSeconds / 60)}}:{{Math.floor(item.videoSeconds % 60) < 10 ? '0' + Math.floor(item.videoSeconds % 60) : Math.floor(item.videoSeconds % 60)}}
@@ -62,9 +62,13 @@
 				uni.request({
 					url: this.baseUrl + '/video/showUserLike?userId=' + this.userId,
 					method: 'POST',
+					header: {
+						'content-type': 'application/json',
+						'x-token': getApp().globalData.getGlobalToken()
+					},
 					success: (res) => {
-						if (res.data.status === 200) {
-							this.videoList = res.data.data
+						if (res.data.code === 200) {
+							this.videoList = res.data.data.list
 							if (res.data.data.length === 0) {
 								this.isEmpty = true
 							}
