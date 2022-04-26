@@ -56,13 +56,12 @@
 					method: 'POST',
 					header: {
 						'content-type': 'application/json',
-						'userId': user.id,
-						'userToken': user.userToken
+						'x-token': getApp().globalData.getGlobalToken()
 					},
 					success: (res) => {
-						if (res.data.status === 200) {
-							this.followList = res.data.data
-							if (res.data.data.length === 0) {
+						if (res.data.code === 200) {
+							this.followList = res.data.data.list
+							if (res.data.data.total === 0) {
 								this.isEmpty = true
 							}
 						}
@@ -73,9 +72,13 @@
 				uni.request({
 					url: this.baseUrl + '/video/showMyFollowVideos?userId=' + user.id,
 					method: 'POST',
+					header: {
+						'content-type': 'application/json',
+						'x-token': getApp().globalData.getGlobalToken()
+					},
 					success: (res) => {
-						if (res.data.status === 200) {
-							this.videoList = res.data.data
+						if (res.data.code === 200) {
+							this.videoList = res.data.data.list
 							this.isVideoEmpty = res.data.data.length === 0 ? true : false
 						}
 					}

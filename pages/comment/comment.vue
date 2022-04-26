@@ -7,13 +7,13 @@
 			<view class="cu-info round">当前：{{videoDesc}}</view>
 			<block v-for="item in commentList" :key="item.id">
 				<view class="cu-item" :class="item.fromUserId === userId ? 'self' : ''">
-					<view class="cu-avatar radius" :style="{'background-image':'url(' + (item.avatar ? fileUrl + item.avatar : defaultAvatar) +')'}" v-if="item.fromUserId != userId" @click="toUserPage(item.fromUserId)"></view>
+					<view class="cu-avatar radius" :style="{'background-image':'url(' + (item.avatar ? item.avatar : defaultAvatar) +')'}" v-if="item.fromUserId != userId" @click="toUserPage(item.fromUserId)"></view>
 					<view class="main">
 						<view class="content shadow" :class="item.fromUserId === userId ? 'bg-green' : ''">
 							<text>{{item.comment}}</text>
 						</view>
 					</view>
-					<view class="cu-avatar radius" :style="{'background-image':'url(' + (item.avatar ? fileUrl + item.avatar : defaultAvatar) +')'}" v-if="item.fromUserId === userId"></view>
+					<view class="cu-avatar radius" :style="{'background-image':'url(' + (item.avatar ? item.avatar : defaultAvatar) +')'}" v-if="item.fromUserId === userId"></view>
 					<view class="date">{{item.timeAgoStr}}</view>
 				</view>
 			</block>
@@ -77,14 +77,13 @@
 					method: 'POST',
 					header: {
 						'content-type': 'application/json',
-						'userId': user.id,
-						'userToken': user.userToken
+						'x-token': getApp().globalData.getGlobalToken()
 					},
 					success: (res) => {
 						// console.log(res);
-						if (res.data.status === 200) {
+						if (res.data.code === 200) {
 							this.commentList = []
-							this.commentList = res.data.data
+							this.commentList = res.data.data.list
 						}
 					}
 				})
@@ -116,14 +115,13 @@
 					method: 'POST',
 					header: {
 						'content-type': 'application/json',
-						'userId': user.id,
-						'userToken': user.userToken
+						'x-token': getApp().globalData.getGlobalToken()
 					},
 					data: data,
 					success: (res) => {
 						this.isLoading = false
 						this.comment = ''
-						if (res.data.status === 200) {
+						if (res.data.code === 200) {
 							// 重新获取数据
 							this.getAllComments()
 							setTimeout(() => {

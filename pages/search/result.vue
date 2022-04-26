@@ -42,7 +42,9 @@
 		},
 		onShow() {
 			this.setTabBarIndex(0)
-			this.$refs.videoList.getAllVideoList(this.page, this.isSaveRecord, this.searchContent)
+			setTimeout(() => {
+				this.$refs.videoList.getAllVideoList(this.page, this.isSaveRecord, this.searchContent)
+			},500)
 		},
 		onHide() {},
 		// 上拉刷新

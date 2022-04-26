@@ -50,9 +50,9 @@
 					'x-token': getApp().globalData.getGlobalToken()
 				},
 				success: (res) => {
-					if (res.data.status === 200) {
-						this.followList = res.data.data
-						if (res.data.data.length === 0) {
+					if (res.data.code === 200) {
+						this.followList = res.data.data.list
+						if (res.data.data.total === 0) {
 							this.isEmpty = true
 						}
 					}

@@ -49,10 +49,14 @@
 				uni.request({
 					url: this.baseUrl + '/video/getAllComments?userId=' + user.id,
 					method: 'POST',
+					header: {
+						'content-type': 'application/json',
+						'x-token': getApp().globalData.getGlobalToken()
+					},
 					success: (res) => {
-						if (res.data.status === 200) {
+						if (res.data.code === 200) {
 							this.messageList = []
-							let data = res.data.data
+							let data = res.data.data.list
 							data.forEach((item) => {
 								let status = false
 								for (let i = 0; i < this.messageList.length; i++) {

@@ -99,8 +99,7 @@
 					method: 'POST',
 					header: {
 						'content-type': 'application/json',
-						'userId': user.id,
-						'userToken': user.userToken
+						'x-token': getApp().globalData.getGlobalToken()
 					},
 					success: (res) => {
 						if (res.data.status === 200) {

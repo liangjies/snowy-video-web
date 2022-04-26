@@ -101,6 +101,10 @@
 				uni.request({
 					url: this.baseUrl +'/video/hot',
 					method: 'POST',
+					header: {
+						'content-type': 'application/json',
+						'x-token': getApp().globalData.getGlobalToken()
+					},
 					success: (res) => {
 						this.hotKeywordList = res.data.data
 					}
@@ -121,6 +125,10 @@
 					uni.request({
 						url: this.baseUrl +'/video/hot',
 						method: 'POST',
+						header: {
+							'content-type': 'application/json',
+							'x-token': getApp().globalData.getGlobalToken()
+						},
 						success: (res) => {
 							// 前端正则匹配
 							let result = []
