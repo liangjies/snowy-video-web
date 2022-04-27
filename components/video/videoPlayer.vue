@@ -3,7 +3,6 @@
 		<video  class="video" id="myVideo" :src="videoPath" :controls="false" :objectFit="cover" @ended="toNextVideo"
 					:show-center-play-btn="false" :loop="isLoop">
 		</video>
-		</video>
 	</view>
 </template>
 
@@ -15,7 +14,7 @@
 				fileUrl: getApp().globalData.fileUrl,
 				isPlay: false,
 				clickCount: 0,
-				cover: "cover",
+				cover: "contain", //contain：包含，fill：填充，cover：覆盖
 				videoPath: "",
 				videoContext: '',
 			}

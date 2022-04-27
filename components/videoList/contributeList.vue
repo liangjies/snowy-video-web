@@ -3,7 +3,7 @@
 		<block v-for="item in videoList" :key="item.id">
 			<list-item :video="item">
 				<block slot="image">
-					<view class="image" :style="{'background-image':'url(' + fileUrl + item.coverPath + ')'}"></view>
+					<view class="image" :style="{'background-image':'url(' + fileUrl + encodeURIComponent(item.coverPath) + ')'}"></view>
 				</block>
 				<block slot="seconds">
 					{{Math.floor(item.videoSeconds / 60)}}:{{Math.floor(item.videoSeconds % 60) < 10 ? '0' + Math.floor(item.videoSeconds % 60) : Math.floor(item.videoSeconds % 60)}}
@@ -66,10 +66,14 @@
 						'videoDesc': '',
 						'userId': this.userId
 					},
+					header: {
+						'content-type': 'application/json',
+						'x-token': getApp().globalData.getGlobalToken()
+					},
 					success: (res) => {
-						if (res.data.status === 200) {
-							this.videoList = res.data.data.rows
-							if (res.data.data.rows.length === 0) {
+						if (res.data.code === 200) {
+							this.videoList = res.data.data.list
+							if (res.data.data.total === 0) {
 								this.isEmpty = true
 							}
 						}
