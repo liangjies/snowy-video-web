@@ -100,7 +100,7 @@
 			// 获取当前视频作者ID
 			this.createrId = params.userId
 			let user = getApp().globalData.getGlobalUserInfo()
-			if (user.id === params.userId) {
+			if (user.id == params.userId) {
 				this.isMe = true
 			}
 			uni.request({
@@ -108,18 +108,19 @@
 				method: "POST",
 				header: {
 					'content-type': 'application/json',
-					'userId': user.id,
-					'userToken': user.userToken
+					'x-token': getApp().globalData.getGlobalToken()
 				},
 				success: (res) => {
-					if (res.data.status === 200) {
+					if (res.data.code === 200) {
 						let data = res.data.data
 						this.userData = data
 						if (data.avatar != null && data.avatar != '' && data.avatar != undefined) {
-							this.avatarUrl = fileUrl + data.avatar
+							// this.avatarUrl = fileUrl + data.avatar
+							this.avatarUrl = data.avatar
 						}
 						if (data.backgroundImage != null && data.backgroundImage != '' && data.backgroundImage != undefined) {
-							this.backgroundImage = fileUrl + data.backgroundImage
+							// this.backgroundImage = fileUrl + data.backgroundImage
+							this.backgroundImage = data.backgroundImage
 						}
 						this.nickname = data.nickname
 						this.userInfo[0].value = data.fansCounts
@@ -180,12 +181,11 @@
 					method: 'POST',
 					header: {
 						'content-type': 'application/json',
-						'userId': user.id,
-						'userToken': user.userToken
+						'x-token': getApp().globalData.getGlobalToken()
 					},
 					success: (res) => {
 						this.isLoading = false
-						if (res.data.status === 200) {
+						if (res.data.code === 200) {
 							this.isFollow = !this.isFollow
 							if (this.isFollow) {
 								uni.showToast({

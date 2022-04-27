@@ -137,7 +137,7 @@
 					},
 					success: (res) => {
 						if (res.data.code === 200) {	
-							let data = res.data.data.user
+							let data = res.data.data
 							getApp().globalData.setGlobalUserInfo(data)
 							if (data.avatar != null && data.avatar != '' && data.avatar != undefined) {
 								// this.avatarUrl = getApp().globalData.fileUrl + data.avatar

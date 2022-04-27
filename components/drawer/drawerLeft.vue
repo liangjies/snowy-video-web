@@ -219,7 +219,7 @@
 					url: this.baseUrl + '/logout?userId=' + user.id,
 					method: "POST",
 					success: (res) => {
-						if (res.data.status === 200) {
+						if (res.data.code === 200) {
 							// 注销以后清空缓存
 							uni.removeStorageSync("userInfo")
 							uni.showToast({
