@@ -61,7 +61,16 @@
 			"path": "pages/upload/upload",
 			"style": {}
 		}
-	],
+        ,{
+            "path" : "pages/test/test",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+    ],
 	"tabBar": {
 		"custom": true,
 		"color": "#7A7E83",
