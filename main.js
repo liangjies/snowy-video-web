@@ -7,6 +7,7 @@ import App from './App'
 
 import cuCustom from './components/cu-custom/cu-custom.vue'
 import cuDialog from './components/cu-dialog/cu-dialog.vue'
+import store from './store'
 
 Vue.component('cu-custom', cuCustom)
 Vue.component('cu-dialog', cuDialog)
@@ -29,6 +30,7 @@ Vue.mixin({
 App.mpType = 'app'
 
 const app = new Vue({
-	...App
+	...App,
+	store
 })
 app.$mount()

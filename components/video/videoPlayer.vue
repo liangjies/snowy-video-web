@@ -1,7 +1,7 @@
 <template>
 	<view class="video-player" @click="doClick">
-		<video  class="video" id="myVideo" :src="videoPath" :controls="true" :objectFit="cover" @ended="toNextVideo"
-					:show-center-play-btn="true" :loop="isLoop" @timeupdate="timeupdate($event)">
+		<video class="video" id="myVideo" :src="videoPath" :controls="false" :objectFit="cover" @ended="toNextVideo"
+			:show-center-play-btn="true" :loop="isLoop" @timeupdate="timeupdate($event)">
 		</video>
 	</view>
 </template>
@@ -20,9 +20,10 @@
 				isControls: true,
 			}
 		},
-		props: ["currentPage", "index","video","isLoop"],
+		props: ["currentPage", "index", "video", "isLoop"],
 		created() {
 			this.videoContext = uni.createVideoContext("myVideo", this);
+			
 		},
 		mounted() {
 			let video = this.video
@@ -32,11 +33,11 @@
 				this.cover = ""
 			}
 			// 进入页面后开启自动播放
-			
+
 			if (this.index === this.currentPage) {
 				setTimeout(() => {
 					this.play();
-				},100)
+				}, 100)
 			}
 		},
 		methods: {
@@ -67,7 +68,7 @@
 			doClick() {
 				// center-box
 				// 点击屏幕一次
-				
+
 				if (timer) {
 					clearTimeout(timer);
 				}
@@ -86,8 +87,9 @@
 				}, 300);
 			},
 			// 播放进度
-			timeupdate(event){
-				console.log(event)
+			timeupdate(event) {
+				this.$store.commit('setVideoTimeList', event)
+				//console.log(event)
 				// console.log(index)
 			}
 		}
@@ -101,9 +103,9 @@
 	}
 
 	.video {
-		width: 100%!important;
-		height: 100%!important;
-		position: absolute!important;
+		width: 100% !important;
+		height: 100% !important;
+		position: absolute !important;
 		z-index: 100;
 	}
 </style>

@@ -2,6 +2,7 @@
 	<view class="content">
 		<video-header></video-header>
 		<video-list></video-list>
+		<video-progress></video-progress>
 		<video-footer></video-footer>
 	</view>
 </template>
@@ -10,11 +11,13 @@
 	import videoHeader from "../../components/video/videoHeader.vue"
 	import videoFooter from "../../components/video/videoFooter.vue"
 	import videoList from "../../components/video/videoList.vue"
+	import videoProgress from "../../components/video/videoProgress.vue"
 	export default {
 		components: {
 			videoList,
 			videoHeader,
-			videoFooter
+			videoFooter,
+			videoProgress
 		},
 	}
 </script>
