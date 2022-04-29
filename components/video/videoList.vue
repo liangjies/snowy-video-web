@@ -160,9 +160,9 @@
 	}
 
 	.swiper {
-		height: 100vh;
-		// height: 100%;
-		width: 100%;
+		height: calc(100vh - 100rpx);
+		// height: 750rpx;
+		width: 100%;	
 	}
 
 	.swiper-item {

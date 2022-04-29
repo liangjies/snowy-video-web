@@ -1,7 +1,7 @@
 <template>
 	<view class="video-player" @click="doClick">
-		<video  class="video" id="myVideo" :src="videoPath" :controls="false" :objectFit="cover" @ended="toNextVideo"
-					:show-center-play-btn="false" :loop="isLoop">
+		<video  class="video" id="myVideo" :src="videoPath" :controls="true" :objectFit="cover" @ended="toNextVideo"
+					:show-center-play-btn="true" :loop="isLoop" @timeupdate="timeupdate($event)">
 		</video>
 	</view>
 </template>
@@ -17,6 +17,7 @@
 				cover: "contain", //contain：包含，fill：填充，cover：覆盖
 				videoPath: "",
 				videoContext: '',
+				isControls: true,
 			}
 		},
 		props: ["currentPage", "index","video","isLoop"],
@@ -64,6 +65,9 @@
 			},
 			// 点击播放或暂停视频，双击点赞
 			doClick() {
+				// center-box
+				// 点击屏幕一次
+				
 				if (timer) {
 					clearTimeout(timer);
 				}
@@ -80,6 +84,11 @@
 					}
 					this.clickCount = 0;
 				}, 300);
+			},
+			// 播放进度
+			timeupdate(event){
+				console.log(event)
+				// console.log(index)
 			}
 		}
 	}

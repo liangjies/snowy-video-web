@@ -84,7 +84,8 @@
 	    margin: 0 auto;
 		display: flex;
 	    z-index: 200;
-		background: linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.6));
+		background: rgba(0,0,0,1);
+		// background: linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.6));
 		.footer-item {
 			flex: 1;
 			color: white;
