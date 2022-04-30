@@ -44,6 +44,9 @@
 		computed: {
 			monitor() {
 				return this.$store.state.videoStatus
+			},
+			seekMonitor() {
+				return this.$store.state.videoSeek
 			}
 		},
 		methods: {
@@ -95,8 +98,6 @@
 			// 播放进度
 			timeupdate(event) {
 				this.$store.commit('setVideoTimeList', event.detail)
-				//console.log(event)
-				// console.log(index)
 			},
 			// 缓冲进度
 			progress(event) {
@@ -105,16 +106,15 @@
 		},
 		watch: {
 			monitor(val) {
-				console.log(val)
-				/*
-				let videoStatus = this.$store.state.videoStatus
-				if (videoStatus) {
+				if (val) {
 					this.play()
 				} else {
 					this.pause()
 				}
-				*/
-			}
+			},
+			seekMonitor(val){
+				this.videoContext.seek(val);
+			},
 		}
 	}
 </script>

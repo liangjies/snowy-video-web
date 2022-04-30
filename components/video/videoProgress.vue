@@ -1,7 +1,8 @@
 <template>
 	<div class="uni-video-bar uni-video-bar-full video-progress-box" style="">
 		<div class="uni-video-controls">
-			<div class="uni-video-control-button uni-video-control-button-play" @click="doClick()"></div>
+			<div class="uni-video-control-button uni-video-control-button-pause" @click="doClick()" v-if="isPlay"></div>
+			<div class="uni-video-control-button uni-video-control-button-play" @click="doClick()" v-if="!isPlay"></div>
 			<div ref="timeRef" class="uni-video-current-time"> {{changeTime}} </div>
 			<div class="uni-video-progress-container">
 				<div ref="progressRef" class="uni-video-progress" @touchmove="touchmove" @touchend="touchend"
@@ -49,7 +50,6 @@
 		},
 		created() {
 			this.windowWidth = uni.getSystemInfoSync().windowWidth //获取屏幕宽度
-
 		},
 		computed: {
 			...mapState({
@@ -60,16 +60,19 @@
 		},
 		mounted() {
 			setTimeout(() => {
-				this.timeupdate()
+				this.timeupdate(this.videoTimeList)
 			}, 500)
-			console.log(this.$refs.timeRef.offsetWidth)
 		},
 		methods: {
-			doClick(){
+			doClick() {
 				this.isPlay = !this.isPlay
 				this.$store.commit('setVideoStatus', this.isPlay)
 			},
 			touchstart(event) {
+				// 暂停播放
+				this.isPlay = false
+				this.$store.commit('setVideoStatus', this.isPlay)
+
 				var msg = []
 				if (this.videoTime !== '') {
 					msg = this.videoTime.split(':')
@@ -102,21 +105,19 @@
 					`${Math.round(middle)>9?Math.round(middle):'0'+Math.round(middle)}:${Math.round(theTime)>9?Math.round(theTime):'0'+Math.round(theTime)}`
 			},
 			touchend() { //当手松开后，跳到最新时间
-				console.log("run3")
-				console.log(this.newTime)
+				this.$store.commit('setVideoSeek', this.newTime)
+
+				// 播放
+				this.isPlay = true
+				this.$store.commit('setVideoStatus', this.isPlay)
 				// console.log(this.videoTimeList.detail.currentTime)
 				// uni.createVideoContext(this.dataList[this.k]._id, this).seek(this.newTime)
 				// if (this.dataList[this.k].state == 'pause') {
 				// 	this.dataList[this.k].state = 'play'
 				// 	uni.createVideoContext(this.dataList[this.k]._id, this).play()
 				// }
-				// this.dataList[this.k].isShowProgressBarTime = false //触摸结束后，隐藏时间线
-				// this.dataList[this.k].isShowimage = false //触摸结束后，隐藏时间预览
-				// this.ProgressBarOpacity = 0.5 //隐藏起来进度条，不那么明显了
-				// this.dotWidth = 0 //隐藏起来进度条，不那么明显了
 			},
 			touchmove(event) { //当手移动滑块时，计算位置、百分小数、新的时间
-				console.log("run4")
 				var msg = []
 				if (this.videoTime !== '') {
 					msg = this.videoTime.split(':')
@@ -146,14 +147,10 @@
 				this.changeTime =
 					`${Math.round(middle)>9?Math.round(middle):'0'+Math.round(middle)}:${Math.round(theTime)>9?Math.round(theTime):'0'+Math.round(theTime)}`
 			},
-			timeupdate() { //计算滑块当前位置，计算当前百分小数
-				this.durationTimeNumber = Math.round(this.videoTimeList.duration)
-				this.currentTimeNumber = Math.round(this.videoTimeList.currentTime)
+			timeupdate(videoTimeList) { //计算滑块当前位置，计算当前百分小数
+				this.durationTimeNumber = Math.round(videoTimeList.duration)
+				this.currentTimeNumber = Math.round(videoTimeList.currentTime)
 				this.getTime()
-				
-				setTimeout(() => {
-					this.timeupdate()
-				}, 500)
 			},
 			getTime() { //得到时间函数
 				this.videoTime = this.formatSeconds(this.durationTimeNumber);
@@ -162,7 +159,7 @@
 					msg = this.videoTime.split(':')
 				}
 				this.videoTimes = `${msg[0]>9?msg[0]:'0'+msg[0]}:${msg[1]>9?msg[1]:'0'+msg[1]}`;
-				
+
 				let currentTime = this.formatSeconds(this.currentTimeNumber);
 				if (currentTime !== '') {
 					msg = currentTime.split(':')
@@ -179,6 +176,11 @@
 				}
 				return `${middle>9?middle:middle}:${theTime>9?theTime:theTime}`;
 			},
+		},
+		watch: {
+			videoTimeList(val) {
+				this.timeupdate(val)
+			}
 		},
 	}
 </script>

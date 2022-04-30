@@ -8,6 +8,7 @@ export default new Vuex.Store({
 		videoStatus: true, //播放状态
 		videoTimeList: [], //播放进度
 		videoProgress: 0, // 缓存进度
+		videoSeek: 0,//跳转播放进度
 	},
 	mutations: {
 		setVideoTimeList(state, videoTimeList) {
@@ -19,6 +20,9 @@ export default new Vuex.Store({
 		setVideoStatus(state, videoStatus) {
 			state.videoStatus = videoStatus
 		},
+		setVideoSeek(state, videoSeek) {
+			state.videoSeek = videoSeek
+		},
 	},
 	getters: {
 		videoTimeList(state) {
@@ -29,6 +33,9 @@ export default new Vuex.Store({
 		},
 		videoStatus(state) {
 			return state.videoStatus
+		},
+		videoSeek(state) {
+			return state.videoSeek
 		},
 	},
 })
