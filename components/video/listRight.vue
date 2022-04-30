@@ -18,9 +18,9 @@
 		<view class="right-box">
 			<view class="icon cuIcon-forwardfill" @click="handleForward"></view>
 		</view>
-		<view class="music-img" :class="{'pauseAnimate': isPauseAnimate}">
+<!-- 		<view class="music-img" :class="{'pauseAnimate': isPauseAnimate}">
 			<image class="img" src="../../static/images/music.png" />
-		</view>
+		</view> -->
 	</view>
 </template>
 
@@ -157,6 +157,7 @@
 					}
 				})
 			},
+			/*
 			// 旋转动画暂停
 			pauseAnimate() {
 				this.isPauseAnimate = true
@@ -165,6 +166,7 @@
 			playAnimate() {
 				this.isPauseAnimate = false
 			}
+			*/
 		}
 	}
 </script>

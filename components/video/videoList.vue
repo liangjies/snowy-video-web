@@ -3,9 +3,9 @@
 		<view class="swiper-box">
 			<swiper class="swiper" :vertical="true" @change="slider" :current="currentPage">
 				<swiper-item v-for="(item,index) in videoList" :key="index">
-					<view class="swiper-item">
+					<view class="swiper-item" v-if="Math.abs(currentPage-index)<=1">
 						<video-player :video="item" :currentPage="currentPage" :index="index" @toNextVideo="toNextVideo" ref="players"
-						 @follow="follow" @pauseAnimate="pauseAnimate" @playAnimate="playAnimate" :isLoop="true" @clickVideo="clickVideo">
+						 @follow="follow" @pauseAnimate="pauseAnimate" :isLoop="true" @clickVideo="clickVideo">
 						</video-player>
 						<view class="left-box">
 							<list-left :video="item"></list-left>
@@ -82,6 +82,7 @@
 			follow(index) {
 				this.$refs.listRight[index].handleFollow();
 			},
+			/*
 			// 开启旋转动画
 			playAnimate(index) {
 				this.isPause = false
@@ -92,19 +93,28 @@
 				this.isPause = true
 				this.$refs.listRight[index].pauseAnimate();
 			},
+			*/
 			clickPause() {
 				this.isPause = true
-				this.$refs.listRight[this.currentPage].pauseAnimate();
-				this.$refs.players[this.currentPage].pause();
+				this.$store.commit('setVideoStatus', !this.isPause)
 			},
 			clickPlay() {
 				this.isPause = false
-				this.$refs.listRight[this.currentPage].playAnimate();
-				this.$refs.players[this.currentPage].play();
+				this.$store.commit('setVideoStatus', !this.isPause)
 			},
 			// 上滑与下滑功能实现
 			slider(e) {
 				const targetPage = e.detail.current;
+				//
+				let data = {currentTime:0,duration:0}
+				this.$store.commit('setVideoTimeList', data)
+				this.$store.commit('setVideoStatus', true)
+				this.$store.commit('setVideoProgress', 0)
+				this.$store.commit('setVideoSeek', 0)
+				//
+				//滑动隐藏控制栏
+				this.isShowPause = false
+				this.isPause = false
 				// 滑动切换视频
 				if (targetPage === this.currentPage + 1) {
 					// console.log("切换到下一个视频");
@@ -134,7 +144,7 @@
 <style lang="scss" scoped>
 	.right-box {
 		position: absolute;
-		bottom: 120rpx;
+		bottom: 100rpx;
 		right: 20rpx;
 		z-index: 200;
 	}

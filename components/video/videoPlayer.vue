@@ -1,7 +1,8 @@
 <template>
 	<view class="video-player" @click="doClick">
 		<video class="video" id="myVideo" :src="videoPath" :controls="false" :objectFit="cover" @ended="toNextVideo"
-			:show-center-play-btn="true" :loop="isLoop" @timeupdate="timeupdate($event)" @progress="progress($event)">
+			:show-center-play-btn="true" :loop="isLoop" @timeupdate="timeupdate($event)" @progress="progress($event)"
+			@loadedmetadata="loadedmetadata($event)">
 		</video>
 	</view>
 </template>
@@ -25,22 +26,26 @@
 		props: ["currentPage", "index", "video", "isLoop"],
 		created() {
 			this.videoContext = uni.createVideoContext("myVideo", this);
-
 		},
 		mounted() {
 			let video = this.video
-			this.videoPath = this.fileUrl + video.videoPath
+			if (video.isLocal) {
+				this.videoPath = this.fileUrl + video.videoPath
+			} else {
+				this.videoPath = video.videoPath
+			}
+
 			// 横向视频进行自适应
 			if (video.videoWidth >= video.videoHeight) {
 				this.cover = ""
 			}
 			// 进入页面后开启自动播放
 
-			if (this.index === this.currentPage) {
-				setTimeout(() => {
-					this.play();
-				}, 100)
-			}
+			// if (this.index === this.currentPage) {
+			// 	setTimeout(() => {
+			// 		this.play();
+			// 	}, 100)
+			// }
 		},
 		computed: {
 			monitor() {
@@ -59,26 +64,26 @@
 			play() {
 				this.videoContext.play();
 				this.isPlay = true;
-				this.$emit('playAnimate', this.currentPage)
+				// this.$emit('playAnimate', this.currentPage)
 			},
 			// 暂停
 			pause() {
 				this.videoContext.pause();
 				this.isPlay = false;
-				this.$emit('pauseAnimate', this.currentPage)
+				// this.$emit('pauseAnimate', this.currentPage)
 			},
 			// 从头播放
 			playFromHead(index) {
 				this.videoContext.seek(0);
 				this.videoContext.play();
 				this.isPlay = true;
-				this.$emit('playAnimate', index)
+				// this.$emit('playAnimate', index)
 			},
 			// 点击播放或暂停视频，双击点赞
 			doClick() {
 				// center-box
 				// 点击屏幕一次
-				
+
 				if (timer) {
 					clearTimeout(timer);
 				}
@@ -88,36 +93,45 @@
 						this.$emit("follow", this.currentPage);
 					} else {
 						this.$emit("clickVideo", true);
-						/*
-						if (this.isPlay) {
-							this.pause();
-						} else {
-							this.play();
-						}
-						*/
 					}
 					this.clickCount = 0;
 				}, 300);
 			},
 			// 播放进度
 			timeupdate(event) {
-				this.$store.commit('setVideoTimeList', event.detail)
+				if (this.isPlay) {
+					this.$store.commit('setVideoTimeList', event.detail)
+				}
 			},
 			// 缓冲进度
 			progress(event) {
-				this.$store.commit('setVideoProgress', parseInt(event.detail.buffered))
+				if (this.isPlay) {
+					this.$store.commit('setVideoProgress', parseInt(event.detail.buffered))
+				}
+			},
+			// 视频元数据
+			loadedmetadata(event) {
+				let data = {
+					currentTime: 0,
+					duration: event.detail.duration
+				}
+				this.$store.commit('setVideoTimeList', data)
 			}
 		},
 		watch: {
 			monitor(val) {
-				if (val) {
-					this.play()
-				} else {
-					this.pause()
+				if (this.$store.state.videoIndex == this.index) {
+					if (val) {
+						this.play()
+					} else {
+						this.pause()
+					}
 				}
 			},
-			seekMonitor(val){
-				this.videoContext.seek(val);
+			seekMonitor(val) {
+				if (this.$store.state.videoIndex == this.index) {
+					this.videoContext.seek(val);
+				}
 			},
 		}
 	}

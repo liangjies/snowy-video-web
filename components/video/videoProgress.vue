@@ -1,8 +1,8 @@
 <template>
 	<div class="uni-video-bar uni-video-bar-full video-progress-box" style="">
 		<div class="uni-video-controls">
-			<div class="uni-video-control-button uni-video-control-button-pause" @click="doClick()" v-if="isPlay"></div>
-			<div class="uni-video-control-button uni-video-control-button-play" @click="doClick()" v-if="!isPlay"></div>
+			<div class="uni-video-control-button uni-video-control-button-pause" @click="pauseClick()" v-if="isPlay"></div>
+			<div class="uni-video-control-button uni-video-control-button-play" @click="playClick()" v-if="!isPlay"></div>
 			<div ref="timeRef" class="uni-video-current-time"> {{changeTime}} </div>
 			<div class="uni-video-progress-container">
 				<div ref="progressRef" class="uni-video-progress" @touchmove="touchmove" @touchend="touchend"
@@ -56,7 +56,9 @@
 				videoTimeList: state => state.videoTimeList,
 				videoProgress: state => state.videoProgress,
 			}),
-
+			monitor() {
+				return this.$store.state.videoStatus
+			},
 		},
 		mounted() {
 			setTimeout(() => {
@@ -64,13 +66,16 @@
 			}, 500)
 		},
 		methods: {
-			doClick() {
-				this.isPlay = !this.isPlay
-				this.$store.commit('setVideoStatus', this.isPlay)
+			playClick() {
+				//this.isPlay = !this.isPlay
+				this.$store.commit('setVideoStatus', true)
+			},
+			pauseClick() {
+				this.$store.commit('setVideoStatus', false)
 			},
 			touchstart(event) {
 				// 开始滑动
-				this.isDragging == true
+				this.isDragging = true
 
 				var msg = []
 				if (this.videoTime !== '') {
@@ -91,6 +96,8 @@
 				} else {
 					this.ballPercent = this.percent * 100
 				}
+				this.percent = this.ballPercent / 100
+
 				this.newTime = this.percent * timeNumber
 
 				this.currenttimes = parseInt(this.newTime)
@@ -102,18 +109,20 @@
 				}
 				this.changeTime =
 					`${Math.round(middle)>9?Math.round(middle):'0'+Math.round(middle)}:${Math.round(theTime)>9?Math.round(theTime):'0'+Math.round(theTime)}`
+				console.log(this.changeTime)
 			},
 			touchend() { //当手松开后，跳到最新时间
 				this.$store.commit('setVideoSeek', this.newTime)
-				
+
 				// 播放
 				this.isPlay = true
 				this.$store.commit('setVideoStatus', this.isPlay)
 				// 结束滑动
-				this.isDragging == false
+				this.isDragging = true
 
 			},
 			touchmove(event) { //当手移动滑块时，计算位置、百分小数、新的时间
+				this.isDragging = true
 				var msg = []
 				if (this.videoTime !== '') {
 					msg = this.videoTime.split(':')
@@ -132,6 +141,7 @@
 				} else {
 					this.ballPercent = this.percent * 100
 				}
+				this.percent = this.ballPercent / 100
 				this.newTime = this.percent * timeNumber
 				this.currenttimes = parseInt(this.newTime)
 				let theTime = this.newTime
@@ -175,10 +185,13 @@
 		},
 		watch: {
 			videoTimeList(val) {
-				if(!this.isDragging){
+				if (!this.isDragging) {
 					this.timeupdate(val)
 				}
-			}
+			},
+			monitor(val) {
+				this.isPlay = val
+			},
 		},
 	}
 </script>

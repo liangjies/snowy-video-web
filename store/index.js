@@ -6,6 +6,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
 	state: {
 		videoStatus: true, //播放状态
+		videoIndex: 0, //播放ID
 		videoTimeList: [], //播放进度
 		videoProgress: 0, // 缓存进度
 		videoSeek: 0,//跳转播放进度
@@ -23,6 +24,9 @@ export default new Vuex.Store({
 		setVideoSeek(state, videoSeek) {
 			state.videoSeek = videoSeek
 		},
+		setVideoIndex(state, videoIndex) {
+			state.videoIndex = videoIndex
+		},
 	},
 	getters: {
 		videoTimeList(state) {
@@ -36,6 +40,9 @@ export default new Vuex.Store({
 		},
 		videoSeek(state) {
 			return state.videoSeek
+		},
+		videoIndex(state) {
+			return state.videoIndex
 		},
 	},
 })
