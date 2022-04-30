@@ -4,7 +4,7 @@
 			<div class="uni-video-control-button uni-video-control-button-play"></div>
 			<div class="uni-video-current-time"> 00:05 </div>
 			<div class="uni-video-progress-container">
-				<div class="uni-video-progress" @touchmove="touchmove" @touchend="touchend" @touchstart="touchstart">
+				<div ref="init" class="uni-video-progress" @touchmove="touchmove" @touchend="touchend" @touchstart="touchstart">
 					<div class="uni-video-progress-buffered" style="width: 12.194%;"></div>
 					<div class="uni-video-ball" style="left: 2.25191%;">
 						<div class="uni-video-inner"></div>
@@ -55,6 +55,7 @@
 	import {
 		mapState
 	} from 'vuex'
+	import {ref} from 'vue'
 	export default {
 		data() {
 			return {
@@ -76,7 +77,8 @@
 			}
 		},
 		created() {
-			this.windowWidth = uni.getSystemInfoSync().screenWidth //获取屏幕宽度
+			this.windowWidth = uni.getSystemInfoSync().windowWidth //获取屏幕宽度
+			
 		},
 		computed: {
 			...mapState({
@@ -87,9 +89,11 @@
 			setTimeout(() => {
 				this.timeupdate()
 			}, 500)
+			console.log(this.$refs.init.offsetWidth)
 		},
 		methods: {
 			touchstart(event) {
+				console.log(event)
 				console.log("run2")
 				// this.dataList[this.k].isShowimage = true //刚触摸的时候就要显示预览视频图片了
 				// this.dataList[this.k].isShowProgressBarTime = true //显示时间线
@@ -98,7 +102,7 @@
 			},
 			touchend() { //当手松开后，跳到最新时间
 				console.log("run3")
-				console.log(this.videoTimeList.detail.currentTime)
+				// console.log(this.videoTimeList.detail.currentTime)
 				// uni.createVideoContext(this.dataList[this.k]._id, this).seek(this.newTime)
 				// if (this.dataList[this.k].state == 'pause') {
 				// 	this.dataList[this.k].state = 'play'
@@ -115,9 +119,11 @@
 				if (this.videoTime !== '') {
 					msg = this.videoTime.split(':')
 				}
-				// var timeNumber = Number(msg[0]) * 60 + Number(msg[1])
-				// this.currentPositions = event.changedTouches[0].screenX
-				// this.percent = this.currentPositions / this.windowWidth
+				var timeNumber = Number(msg[0]) * 60 + Number(msg[1])
+				this.currentPositions = event.changedTouches[0].clientX
+				
+				this.percent = this.currentPositions / this.windowWidth
+				console.log(this.percent)
 				// this.newTime = this.percent * timeNumber
 				// this.currenttimes = parseInt(this.newTime)
 				// let theTime = this.newTime
@@ -130,13 +136,14 @@
 				// 	`${Math.round(middle)>9?Math.round(middle):'0'+Math.round(middle)}:${Math.round(theTime)>9?Math.round(theTime):'0'+Math.round(theTime)}`
 			},
 			timeupdate() { //计算滑块当前位置，计算当前百分小数
-				console.log(this.videoTimeList)
+				// console.log(this.videoTimeList)
 				var currenttime = this.videoTimeList.detail.currentTime
 				this.timeNumber = Math.round(this.videoTimeList.detail.duration)
 				this.getTime()
-				/*
 				this.percent = currenttime / this.timeNumber
+				
 				this.currentPosition = this.windowWidth * this.percent
+				/*
 				let theTime = currenttime
 				let middle = 0; // 分
 				if (theTime > 60) {
