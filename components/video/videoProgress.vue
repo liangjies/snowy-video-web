@@ -2,9 +2,10 @@
 	<div class="uni-video-bar uni-video-bar-full video-progress-box" style="">
 		<div class="uni-video-controls">
 			<div class="uni-video-control-button uni-video-control-button-play"></div>
-			<div class="uni-video-current-time"> 00:05 </div>
+			<div ref="timeRef" class="uni-video-current-time"> 00:05 </div>
 			<div class="uni-video-progress-container">
-				<div ref="init" class="uni-video-progress" @touchmove="touchmove" @touchend="touchend" @touchstart="touchstart">
+				<div ref="progressRef" class="uni-video-progress" @touchmove="touchmove" @touchend="touchend"
+					@touchstart="touchstart">
 					<div class="uni-video-progress-buffered" style="width: 12.194%;"></div>
 					<div class="uni-video-ball" style="left: 2.25191%;">
 						<div class="uni-video-inner"></div>
@@ -55,7 +56,9 @@
 	import {
 		mapState
 	} from 'vuex'
-	import {ref} from 'vue'
+	import {
+		ref
+	} from 'vue'
 	export default {
 		data() {
 			return {
@@ -78,7 +81,7 @@
 		},
 		created() {
 			this.windowWidth = uni.getSystemInfoSync().windowWidth //获取屏幕宽度
-			
+
 		},
 		computed: {
 			...mapState({
@@ -89,7 +92,7 @@
 			setTimeout(() => {
 				this.timeupdate()
 			}, 500)
-			console.log(this.$refs.init.offsetWidth)
+			console.log(this.$refs.timeRef.offsetWidth)
 		},
 		methods: {
 			touchstart(event) {
@@ -121,8 +124,13 @@
 				}
 				var timeNumber = Number(msg[0]) * 60 + Number(msg[1])
 				this.currentPositions = event.changedTouches[0].clientX
-				
-				this.percent = this.currentPositions / this.windowWidth
+
+				this.currentPositions = this.currentPositions - 8.5 - 38 - this.$refs.timeRef.offsetWidth - 12
+				var withCut =  2 * 8.5 + 38 + 2 * this.$refs.timeRef.offsetWidth + 2 * 12
+				var currentWidth = this.windowWidth - withCut
+				// console.log(this.currentPositions)
+				// console.log(this.windowWidth)
+				this.percent = this.currentPositions / currentWidth
 				console.log(this.percent)
 				// this.newTime = this.percent * timeNumber
 				// this.currenttimes = parseInt(this.newTime)
@@ -141,7 +149,7 @@
 				this.timeNumber = Math.round(this.videoTimeList.detail.duration)
 				this.getTime()
 				this.percent = currenttime / this.timeNumber
-				
+
 				this.currentPosition = this.windowWidth * this.percent
 				/*
 				let theTime = currenttime
