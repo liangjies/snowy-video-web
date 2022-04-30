@@ -69,9 +69,8 @@
 				this.$store.commit('setVideoStatus', this.isPlay)
 			},
 			touchstart(event) {
-				// 暂停播放
-				this.isPlay = false
-				this.$store.commit('setVideoStatus', this.isPlay)
+				// 开始滑动
+				this.isDragging == true
 
 				var msg = []
 				if (this.videoTime !== '') {
@@ -106,16 +105,13 @@
 			},
 			touchend() { //当手松开后，跳到最新时间
 				this.$store.commit('setVideoSeek', this.newTime)
-
+				
 				// 播放
 				this.isPlay = true
 				this.$store.commit('setVideoStatus', this.isPlay)
-				// console.log(this.videoTimeList.detail.currentTime)
-				// uni.createVideoContext(this.dataList[this.k]._id, this).seek(this.newTime)
-				// if (this.dataList[this.k].state == 'pause') {
-				// 	this.dataList[this.k].state = 'play'
-				// 	uni.createVideoContext(this.dataList[this.k]._id, this).play()
-				// }
+				// 结束滑动
+				this.isDragging == false
+
 			},
 			touchmove(event) { //当手移动滑块时，计算位置、百分小数、新的时间
 				var msg = []
@@ -179,7 +175,9 @@
 		},
 		watch: {
 			videoTimeList(val) {
-				this.timeupdate(val)
+				if(!this.isDragging){
+					this.timeupdate(val)
+				}
 			}
 		},
 	}

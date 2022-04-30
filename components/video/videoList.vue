@@ -5,12 +5,11 @@
 				<swiper-item v-for="(item,index) in videoList" :key="index">
 					<view class="swiper-item">
 						<video-player :video="item" :currentPage="currentPage" :index="index" @toNextVideo="toNextVideo" ref="players"
-						 @follow="follow" @pauseAnimate="pauseAnimate" @playAnimate="playAnimate" :isLoop="false">
+						 @follow="follow" @pauseAnimate="pauseAnimate" @playAnimate="playAnimate" :isLoop="true" @clickVideo="clickVideo">
 						</video-player>
 						<view class="left-box">
 							<list-left :video="item"></list-left>
 						</view>
-						<view class="center-box" v-show="isPause" @click="clickPlay"><text class="cuIcon-stop"></text></view>
 						<view class="right-box">
 							<list-right ref="listRight" :video="item"></list-right>
 						</view>
@@ -26,6 +25,8 @@
 				</swiper-item>
 			</swiper>
 		</view>
+		<view class="center-box" v-show="isShowPause && !isPause" @click="clickPause"><text class="cuIcon-stop"></text></view>
+		<view class="center-box" v-show="isPause" @click="clickPlay"><text class="cuIcon-playfill"></text></view>
 	</view>
 </template>
 
@@ -45,7 +46,8 @@
 				videoList: getApp().globalData.videoList,
 				currentPage: getApp().globalData.currentPage,
 				isPause: false,
-				isComment: false
+				isComment: false,
+				isShowPause: false,
 			}
 		},
 		mounted() {
@@ -90,6 +92,11 @@
 				this.isPause = true
 				this.$refs.listRight[index].pauseAnimate();
 			},
+			clickPause() {
+				this.isPause = true
+				this.$refs.listRight[this.currentPage].pauseAnimate();
+				this.$refs.players[this.currentPage].pause();
+			},
 			clickPlay() {
 				this.isPause = false
 				this.$refs.listRight[this.currentPage].playAnimate();
@@ -113,6 +120,12 @@
 					this.$refs.players[targetPage].playFromHead(targetPage);
 				}
 				this.currentPage = targetPage;
+			},
+			clickVideo(val){
+				this.isShowPause = !this.isShowPause 
+				setTimeout(() => {
+					this.isShowPause = !this.isShowPause
+				}, 3500)
 			}
 		}
 	}
@@ -139,7 +152,7 @@
 		height: 100rpx;
 		border-radius: 50%;
 		background: rgba(255, 255, 255, .15);
-		z-index: 200;
+		z-index: 900;
 	}
 
 	.left-box {

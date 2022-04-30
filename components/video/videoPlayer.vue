@@ -13,6 +13,7 @@
 			return {
 				fileUrl: getApp().globalData.fileUrl,
 				isPlay: false,
+				clickPlay: false,
 				clickCount: 0,
 				cover: "contain", //contain：包含，fill：填充，cover：覆盖
 				videoPath: "",
@@ -77,7 +78,7 @@
 			doClick() {
 				// center-box
 				// 点击屏幕一次
-
+				
 				if (timer) {
 					clearTimeout(timer);
 				}
@@ -86,11 +87,14 @@
 					if (this.clickCount >= 2) {
 						this.$emit("follow", this.currentPage);
 					} else {
+						this.$emit("clickVideo", true);
+						/*
 						if (this.isPlay) {
 							this.pause();
 						} else {
 							this.play();
 						}
+						*/
 					}
 					this.clickCount = 0;
 				}, 300);
