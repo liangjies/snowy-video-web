@@ -2,54 +2,20 @@
 	<div class="uni-video-bar uni-video-bar-full video-progress-box" style="">
 		<div class="uni-video-controls">
 			<div class="uni-video-control-button uni-video-control-button-play"></div>
-			<div ref="timeRef" class="uni-video-current-time"> 00:05 </div>
+			<div ref="timeRef" class="uni-video-current-time"> {{changeTime}} </div>
 			<div class="uni-video-progress-container">
 				<div ref="progressRef" class="uni-video-progress" @touchmove="touchmove" @touchend="touchend"
 					@touchstart="touchstart">
-					<div class="uni-video-progress-buffered" style="width: 12.194%;"></div>
-					<div class="uni-video-ball" style="left: 2.25191%;">
+					<div class="uni-video-progress-buffered" :style="'width: '+(videoProgress)+'%;'"></div>
+					<div class="uni-video-ball" :style="'left: '+(ballPercent)+'%;'">
 						<div class="uni-video-inner"></div>
 					</div>
 				</div>
 				<!-- <progress :percent="100" :stroke-width="6" border-radius="60" activeColor="#09BB07" backgroundColor="#EBEBEB"/> -->
 			</div>
-			<div class="uni-video-duration"> 03:55 </div>
+			<div class="uni-video-duration"> {{videoTimes}} </div>
 		</div>
 	</div>
-
-	<!-- 	<view class="video-progress" style="background-color: #555555;height:100vh;width: 100%;">
-		<p>hello</p> -->
-	<!-- 1.注意：进度条这类拖拽的东西不能放进block\cell这些循环体中的，要不然touchmove方法会捕捉有误 -->
-	<!-- 		<view v-if="isShowProgressBarTime == true"
-			class="time-bar"
-			:style="'position: absolute; bottom: '+ (ProgressBarBottom + 70) +'upx;'">
-			<text style="font-size: 18px; color: #F1F1F1;">{{changeTime}} / {{videoTimes}}</text>
-		</view> -->
-	<!-- 这里就是进度条了：纯手工进度条，调整位置的话就把他们的 bottom 改成一下就行了 -->
-	<!-- <view @touchmove="touchmove" @touchend="touchend" @touchstart="touchstart" -->
-	<!-- :style="'position: absolute; bottom: '+ (ProgressBarBottom - 20) +'upx; left: 0;'"> -->
-	<!-- 1.这一步必须加，为了适配低端机型 -->
-	<!-- <text :style="'width: '+ windowWidth +'px; opacity: 0;'">.</text> -->
-	<!-- 2.这是未加载的时的右边的灰色部分 -->
-	<!-- 			<view
-				:style="'width: '+ windowWidth +'px; height: 4upx; background-color: #C8C7CC; position: absolute; bottom: '+ ProgressBarBottom +'upx; opacity: '+ ProgressBarOpacity +';'">
-			</view> -->
-	<!-- 3.这里我采用的分离式办法：就是让滑动样式和不滑动的样式分开，这样相互不干扰，可以避免进度条闪动的问题 -->
-	<!-- 4.注意：isShowProgressBarTime 加入了返回数据中 -->
-	<!-- 			<view v-if="isShowProgressBarTime == false"
-				:style="'width: '+ (currentPosition) +'px; height: 4upx; background-color: #FFFFFF; position: absolute; bottom: '+ ProgressBarBottom +'upx; left: 0; opacity: '+ (ProgressBarOpacity - 0.1) +';'">
-			</view>
-			<view v-if="isShowProgressBarTime == true"
-				:style="'width: '+ (currentPositions) +'px; height: 8upx; background-color: #FFFFFF; position: absolute; bottom: '+ ProgressBarBottom +'upx; left: 0; opacity: '+ (ProgressBarOpacity + 0.05) +';'">
-			</view>
-			<view v-if="isShowProgressBarTime == false"
-				:style="'width: 4px; height: 4px; background-color: #FFFFFF; border-radius: 10px; position: absolute; bottom: '+ (ProgressBarBottom - 2) +'upx; left: '+ (currentPosition) +'px; opacity: '+ ProgressBarOpacity +';'">
-			</view>
-			<view v-if="isShowProgressBarTime == true"
-				:style="'width: '+ dotWidth +'px; height: '+ dotWidth +'px; background-color: #FFFFFF; border-radius: 10px; position: absolute; bottom: '+ (ProgressBarBottom - 5) +'upx; left: '+ (currentPositions - 5) +'px; opacity: '+ ProgressBarOpacity +';'">
-			</view>
-		</view>
-	</view> -->
 </template>
 
 <script>
@@ -64,19 +30,20 @@
 			return {
 				isShowProgressBarTime: true,
 				dataList: [], //用于数据循环的列表🌟💗
-				videoTime: '100', //视频总时长，这个主要用来截取时间数值💗
-				videoTimes: '100', //视频时长，用这个来获取时间值，例如：00:30这个时间值💗
-				changeTime: '20', //显示滑动进度条时变化的时间💗
+				videoTime: '', //视频总时长，这个主要用来截取时间数值💗
+				videoTimes: '', //视频时长，用这个来获取时间值，例如：00:30这个时间值💗
+				changeTime: '', //显示滑动进度条时变化的时间💗
 				currenttimes: 0, //当前时间💗
 				ProgressBarBottom: 20, //进度条离底部的距离💗
 				windowWidth: 0, //获取屏幕宽度🌟💗
 				windowHeight: 0,
 				isDragging: false, //false代表停止滑动🌟💗
-				ProgressBarOpacity: 0.7, //进度条不拖动时的默认值，就是透明的💗
-				currentPosition: 50, //滑块当前位置💗//2.0已弃用，现已用于后端参数
-				currentPositions: 50, //滑块当前位置的副本💗//2.0已弃用，现已用于后端参数
-				dotWidth: 0, //播放的小圆点，默认没有💗
+				currentPositions: 0, //滑块当前位置的副本💗//2.0已弃用，现已用于后端参数
 				newTime: 0, //跟手滑动后的最新时间💗
+				percent: 0, //百分小数💗
+				ballPercent: 0, //百分数
+				durationTimeNumber: 0,
+				currentTimeNumber: 0,
 			}
 		},
 		created() {
@@ -86,7 +53,9 @@
 		computed: {
 			...mapState({
 				videoTimeList: state => state.videoTimeList,
+				videoProgress: state => state.videoProgress,
 			}),
+
 		},
 		mounted() {
 			setTimeout(() => {
@@ -96,15 +65,40 @@
 		},
 		methods: {
 			touchstart(event) {
-				console.log(event)
-				console.log("run2")
-				// this.dataList[this.k].isShowimage = true //刚触摸的时候就要显示预览视频图片了
-				// this.dataList[this.k].isShowProgressBarTime = true //显示时间线
-				// this.ProgressBarOpacity = 1 //让滑块显示起来更明显一点
-				// this.dotWidth = 10 //让点显示起来更明显一点
+				var msg = []
+				if (this.videoTime !== '') {
+					msg = this.videoTime.split(':')
+				}
+				var timeNumber = Number(msg[0]) * 60 + Number(msg[1])
+
+				this.currentPositions = event.changedTouches[0].clientX
+				this.currentPositions = this.currentPositions - 8.5 - 38 - this.$refs.timeRef.offsetWidth - 12 - 10
+				var withCut = 2 * 8.5 + 38 + 2 * this.$refs.timeRef.offsetWidth + 2 * 12 + 2 * 10
+				var currentWidth = this.windowWidth - withCut
+
+				this.percent = this.currentPositions / currentWidth
+				if (this.percent > 1) {
+					this.ballPercent = 100
+				} else if (this.percent < 0) {
+					this.ballPercent = 0
+				} else {
+					this.ballPercent = this.percent * 100
+				}
+				this.newTime = this.percent * timeNumber
+
+				this.currenttimes = parseInt(this.newTime)
+				let theTime = this.newTime
+				let middle = 0; // 分
+				if (theTime > 60) {
+					middle = parseInt(theTime / 60);
+					theTime = parseInt(theTime % 60);
+				}
+				this.changeTime =
+					`${Math.round(middle)>9?Math.round(middle):'0'+Math.round(middle)}:${Math.round(theTime)>9?Math.round(theTime):'0'+Math.round(theTime)}`
 			},
 			touchend() { //当手松开后，跳到最新时间
 				console.log("run3")
+				console.log(this.newTime)
 				// console.log(this.videoTimeList.detail.currentTime)
 				// uni.createVideoContext(this.dataList[this.k]._id, this).seek(this.newTime)
 				// if (this.dataList[this.k].state == 'pause') {
@@ -124,33 +118,42 @@
 				}
 				var timeNumber = Number(msg[0]) * 60 + Number(msg[1])
 				this.currentPositions = event.changedTouches[0].clientX
-
-				this.currentPositions = this.currentPositions - 8.5 - 38 - this.$refs.timeRef.offsetWidth - 12
-				var withCut =  2 * 8.5 + 38 + 2 * this.$refs.timeRef.offsetWidth + 2 * 12
+				this.currentPositions = this.currentPositions - 8.5 - 38 - this.$refs.timeRef.offsetWidth - 12 - 10
+				var withCut = 2 * 8.5 + 38 + 2 * this.$refs.timeRef.offsetWidth + 2 * 12 + 2 * 10
 				var currentWidth = this.windowWidth - withCut
-				// console.log(this.currentPositions)
-				// console.log(this.windowWidth)
+
 				this.percent = this.currentPositions / currentWidth
-				console.log(this.percent)
-				// this.newTime = this.percent * timeNumber
-				// this.currenttimes = parseInt(this.newTime)
-				// let theTime = this.newTime
-				// let middle = 0; // 分
-				// if (theTime > 60) {
-				// 	middle = parseInt(theTime / 60);
-				// 	theTime = parseInt(theTime % 60);
-				// }
-				// this.changeTime =
-				// 	`${Math.round(middle)>9?Math.round(middle):'0'+Math.round(middle)}:${Math.round(theTime)>9?Math.round(theTime):'0'+Math.round(theTime)}`
+				if (this.percent > 1) {
+					this.ballPercent = 100
+				} else if (this.percent < 0) {
+					this.ballPercent = 0
+				} else {
+					this.ballPercent = this.percent * 100
+				}
+				this.newTime = this.percent * timeNumber
+				this.currenttimes = parseInt(this.newTime)
+				let theTime = this.newTime
+				let middle = 0; // 分
+				if (theTime > 60) {
+					middle = parseInt(theTime / 60);
+					theTime = parseInt(theTime % 60);
+				}
+				this.changeTime =
+					`${Math.round(middle)>9?Math.round(middle):'0'+Math.round(middle)}:${Math.round(theTime)>9?Math.round(theTime):'0'+Math.round(theTime)}`
 			},
 			timeupdate() { //计算滑块当前位置，计算当前百分小数
 				// console.log(this.videoTimeList)
-				var currenttime = this.videoTimeList.detail.currentTime
-				this.timeNumber = Math.round(this.videoTimeList.detail.duration)
+				
+				this.durationTimeNumber = Math.round(this.videoTimeList.duration)
+				this.currentTimeNumber = Math.round(this.videoTimeList.currentTime)
+				
 				this.getTime()
-				this.percent = currenttime / this.timeNumber
+				setTimeout(() => {
+					this.timeupdate()
+				}, 500)
+				// this.percent = currenttime / this.timeNumber
 
-				this.currentPosition = this.windowWidth * this.percent
+				// this.currentPosition = this.windowWidth * this.percent
 				/*
 				let theTime = currenttime
 				let middle = 0; // 分
@@ -178,13 +181,22 @@
 
 			},
 			getTime() { //得到时间函数
-				this.videoTime = this.formatSeconds(this.timeNumber);
-				// console.log(this.videoTime)
+				this.videoTime = this.formatSeconds(this.durationTimeNumber);
 				var msg = []
 				if (this.videoTime !== '') {
 					msg = this.videoTime.split(':')
 				}
+				
 				this.videoTimes = `${msg[0]>9?msg[0]:'0'+msg[0]}:${msg[1]>9?msg[1]:'0'+msg[1]}`;
+				
+				let currentTime = this.formatSeconds(this.currentTimeNumber);
+				if (currentTime !== '') {
+					msg = currentTime.split(':')
+				}
+				
+				this.changeTime = `${msg[0]>9?msg[0]:'0'+msg[0]}:${msg[1]>9?msg[1]:'0'+msg[1]}`;
+				
+				this.ballPercent = this.currentTimeNumber * 100 / this.durationTimeNumber
 			},
 			formatSeconds(value) { //获取时间函数
 				let theTime = parseInt(value); // 秒

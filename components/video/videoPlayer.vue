@@ -1,7 +1,7 @@
 <template>
 	<view class="video-player" @click="doClick">
 		<video class="video" id="myVideo" :src="videoPath" :controls="false" :objectFit="cover" @ended="toNextVideo"
-			:show-center-play-btn="true" :loop="isLoop" @timeupdate="timeupdate($event)">
+			:show-center-play-btn="true" :loop="isLoop" @timeupdate="timeupdate($event)" @progress="progress($event)">
 		</video>
 	</view>
 </template>
@@ -23,7 +23,7 @@
 		props: ["currentPage", "index", "video", "isLoop"],
 		created() {
 			this.videoContext = uni.createVideoContext("myVideo", this);
-			
+
 		},
 		mounted() {
 			let video = this.video
@@ -88,9 +88,13 @@
 			},
 			// 播放进度
 			timeupdate(event) {
-				this.$store.commit('setVideoTimeList', event)
+				this.$store.commit('setVideoTimeList', event.detail)
 				//console.log(event)
 				// console.log(index)
+			},
+			// 缓冲进度
+			progress(event) {
+				this.$store.commit('setVideoProgress', parseInt(event.detail.buffered))
 			}
 		}
 	}
