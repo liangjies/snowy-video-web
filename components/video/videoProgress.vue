@@ -1,7 +1,7 @@
 <template>
 	<div class="uni-video-bar uni-video-bar-full video-progress-box" style="">
 		<div class="uni-video-controls">
-			<div class="uni-video-control-button uni-video-control-button-play"></div>
+			<div class="uni-video-control-button uni-video-control-button-play" @click="doClick()"></div>
 			<div ref="timeRef" class="uni-video-current-time"> {{changeTime}} </div>
 			<div class="uni-video-progress-container">
 				<div ref="progressRef" class="uni-video-progress" @touchmove="touchmove" @touchend="touchend"
@@ -44,6 +44,7 @@
 				ballPercent: 0, //百分数
 				durationTimeNumber: 0,
 				currentTimeNumber: 0,
+				isPlay: true,
 			}
 		},
 		created() {
@@ -64,6 +65,10 @@
 			console.log(this.$refs.timeRef.offsetWidth)
 		},
 		methods: {
+			doClick(){
+				this.isPlay = !this.isPlay
+				this.$store.commit('setVideoStatus', this.isPlay)
+			},
 			touchstart(event) {
 				var msg = []
 				if (this.videoTime !== '') {
@@ -142,43 +147,13 @@
 					`${Math.round(middle)>9?Math.round(middle):'0'+Math.round(middle)}:${Math.round(theTime)>9?Math.round(theTime):'0'+Math.round(theTime)}`
 			},
 			timeupdate() { //计算滑块当前位置，计算当前百分小数
-				// console.log(this.videoTimeList)
-				
 				this.durationTimeNumber = Math.round(this.videoTimeList.duration)
 				this.currentTimeNumber = Math.round(this.videoTimeList.currentTime)
-				
 				this.getTime()
+				
 				setTimeout(() => {
 					this.timeupdate()
 				}, 500)
-				// this.percent = currenttime / this.timeNumber
-
-				// this.currentPosition = this.windowWidth * this.percent
-				/*
-				let theTime = currenttime
-				let middle = 0; // 分
-				if (theTime > 60) {
-					middle = parseInt(theTime / 60);
-					theTime = parseInt(theTime % 60);
-				}
-				this.changeTime =
-					`${Math.round(middle)>9?Math.round(middle):'0'+Math.round(middle)}:${Math.round(theTime)>9?Math.round(theTime):'0'+Math.round(theTime)}`
-				//自动切换视频
-				if (this.isAutoplay) { //true,代表自动播放
-					if (Math.round(currenttime) == this.timeNumber - 1) {
-						const dom = uni.requireNativePlugin('dom')
-						let doms = 'item' + (this.k + 1)
-						setTimeout(() => {
-							let el = this.$refs[doms][0]
-							dom.scrollToElement(el, {
-								offset: 0,
-								animated: true
-							})
-						}, 500)
-					}
-				}
-				*/
-
 			},
 			getTime() { //得到时间函数
 				this.videoTime = this.formatSeconds(this.durationTimeNumber);
@@ -186,16 +161,13 @@
 				if (this.videoTime !== '') {
 					msg = this.videoTime.split(':')
 				}
-				
 				this.videoTimes = `${msg[0]>9?msg[0]:'0'+msg[0]}:${msg[1]>9?msg[1]:'0'+msg[1]}`;
 				
 				let currentTime = this.formatSeconds(this.currentTimeNumber);
 				if (currentTime !== '') {
 					msg = currentTime.split(':')
 				}
-				
 				this.changeTime = `${msg[0]>9?msg[0]:'0'+msg[0]}:${msg[1]>9?msg[1]:'0'+msg[1]}`;
-				
 				this.ballPercent = this.currentTimeNumber * 100 / this.durationTimeNumber
 			},
 			formatSeconds(value) { //获取时间函数
@@ -212,11 +184,6 @@
 </script>
 
 <style>
-	.time-bar {
-		left: 50%;
-		justify-content: center
-	}
-
 	.video-progress-box {
 		bottom: 100rpx;
 	}

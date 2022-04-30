@@ -18,6 +18,7 @@
 				videoPath: "",
 				videoContext: '',
 				isControls: true,
+				videoStatus: false,
 			}
 		},
 		props: ["currentPage", "index", "video", "isLoop"],
@@ -38,6 +39,11 @@
 				setTimeout(() => {
 					this.play();
 				}, 100)
+			}
+		},
+		computed: {
+			monitor() {
+				return this.$store.state.videoStatus
 			}
 		},
 		methods: {
@@ -95,6 +101,19 @@
 			// 缓冲进度
 			progress(event) {
 				this.$store.commit('setVideoProgress', parseInt(event.detail.buffered))
+			}
+		},
+		watch: {
+			monitor(val) {
+				console.log(val)
+				/*
+				let videoStatus = this.$store.state.videoStatus
+				if (videoStatus) {
+					this.play()
+				} else {
+					this.pause()
+				}
+				*/
 			}
 		}
 	}

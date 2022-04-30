@@ -5,6 +5,7 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
 	state: {
+		videoStatus: true, //播放状态
 		videoTimeList: [], //播放进度
 		videoProgress: 0, // 缓存进度
 	},
@@ -15,6 +16,9 @@ export default new Vuex.Store({
 		setVideoProgress(state, videoProgress) {
 			state.videoProgress = videoProgress
 		},
+		setVideoStatus(state, videoStatus) {
+			state.videoStatus = videoStatus
+		},
 	},
 	getters: {
 		videoTimeList(state) {
@@ -22,6 +26,9 @@ export default new Vuex.Store({
 		},
 		videoProgress(state) {
 			return state.videoProgress
+		},
+		videoStatus(state) {
+			return state.videoStatus
 		},
 	},
 })
