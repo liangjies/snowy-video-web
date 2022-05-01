@@ -1,13 +1,16 @@
 <template>
 	<view class="video-player" @click="doClick">
-		<video class="video" id="myVideo" :src="videoPath" :controls="false" :objectFit="cover" @ended="toNextVideo"
-			:show-center-play-btn="true" :loop="isLoop" @timeupdate="timeupdate($event)" @progress="progress($event)"
-			@loadedmetadata="loadedmetadata($event)">
+		<video class="video" :id="'myVideo'+index" :src="videoPath" :controls="false" :objectFit="cover"
+			:show-center-play-btn="false" :loop="isLoop" @timeupdate="timeupdate($event)" @progress="progress($event)"
+			@loadedmetadata="loadedmetadata($event)" v-if="Math.abs(currentPage-index)<=1">
 		</video>
 	</view>
 </template>
 
 <script>
+	import {
+		mapState
+	} from 'vuex'
 	let timer = null;
 	export default {
 		data() {
@@ -21,11 +24,12 @@
 				videoContext: '',
 				isControls: true,
 				videoStatus: false,
+				muted: true,
 			}
 		},
 		props: ["currentPage", "index", "video", "isLoop"],
 		created() {
-			this.videoContext = uni.createVideoContext("myVideo", this);
+			this.videoContext = uni.createVideoContext("myVideo"+this.index, this);
 		},
 		mounted() {
 			let video = this.video
@@ -48,6 +52,9 @@
 			// }
 		},
 		computed: {
+			...mapState({
+				videoIndex: state => state.videoIndex,
+			}),
 			monitor() {
 				return this.$store.state.videoStatus
 			},
@@ -56,27 +63,29 @@
 			}
 		},
 		methods: {
-			// 播放完成后滑动到下一页
-			toNextVideo() {
-				this.$emit('toNextVideo', this.currentPage)
-			},
 			// 播放
 			play() {
+				console.log("play",this.index)
 				this.videoContext.play();
 				this.isPlay = true;
 				// this.$emit('playAnimate', this.currentPage)
 			},
 			// 暂停
 			pause() {
+				console.log("pause index",this.index)
+				console.log("pause currentPage",this.currentPage)
 				this.videoContext.pause();
 				this.isPlay = false;
 				// this.$emit('pauseAnimate', this.currentPage)
 			},
 			// 从头播放
 			playFromHead(index) {
-				this.videoContext.seek(0);
-				this.videoContext.play();
-				this.isPlay = true;
+				console.log("playFromHead",index)
+				if (this.videoIndex == this.index) {
+					this.videoContext.seek(0);
+					this.videoContext.play();
+					this.isPlay = true;
+				}
 				// this.$emit('playAnimate', index)
 			},
 			// 点击播放或暂停视频，双击点赞
@@ -99,13 +108,13 @@
 			},
 			// 播放进度
 			timeupdate(event) {
-				if (this.isPlay) {
+				if (this.videoIndex == this.index) {
 					this.$store.commit('setVideoTimeList', event.detail)
 				}
 			},
 			// 缓冲进度
 			progress(event) {
-				if (this.isPlay) {
+				if (this.videoIndex == this.index) {
 					this.$store.commit('setVideoProgress', parseInt(event.detail.buffered))
 				}
 			},
@@ -115,12 +124,16 @@
 					currentTime: 0,
 					duration: event.detail.duration
 				}
-				this.$store.commit('setVideoTimeList', data)
+				if (this.videoIndex == this.index) {
+					this.$store.commit('setVideoTimeList', data)
+				}
 			}
 		},
 		watch: {
 			monitor(val) {
-				if (this.$store.state.videoIndex == this.index) {
+				// console.log("val",val)
+				// console.log("videoIndex",this.videoIndex == this.index)
+				if (this.videoIndex == this.index) {
 					if (val) {
 						this.play()
 					} else {
@@ -129,7 +142,7 @@
 				}
 			},
 			seekMonitor(val) {
-				if (this.$store.state.videoIndex == this.index) {
+				if (this.videoIndex == this.index) {
 					this.videoContext.seek(val);
 				}
 			},

@@ -113,12 +113,13 @@
 			},
 			touchend() { //当手松开后，跳到最新时间
 				this.$store.commit('setVideoSeek', this.newTime)
-
 				// 播放
 				this.isPlay = true
 				this.$store.commit('setVideoStatus', this.isPlay)
+				// 缓冲进度条也跟上
+				this.$store.commit('setVideoProgress', this.ballPercent)
 				// 结束滑动
-				this.isDragging = true
+				this.isDragging = false
 
 			},
 			touchmove(event) { //当手移动滑块时，计算位置、百分小数、新的时间

@@ -3,14 +3,14 @@
 		<view class="swiper-box">
 			<swiper class="swiper" :vertical="true" @change="slider" :current="currentPage">
 				<swiper-item v-for="(item,index) in videoList" :key="index">
-					<view class="swiper-item" v-if="Math.abs(currentPage-index)<=1">
-						<video-player :video="item" :currentPage="currentPage" :index="index" @toNextVideo="toNextVideo" ref="players"
-						 @follow="follow" @pauseAnimate="pauseAnimate" :isLoop="true" @clickVideo="clickVideo">
+					<view class="swiper-item">
+						<video-player :video="item" :currentPage="currentPage" :index="index" ref="players"
+							@follow="follow" :isLoop="true" @clickVideo="clickVideo">
 						</video-player>
-						<view class="left-box">
+						<view class="left-box" v-if="Math.abs(currentPage-index)<=1">
 							<list-left :video="item"></list-left>
 						</view>
-						<view class="right-box">
+						<view class="right-box" v-if="Math.abs(currentPage-index)<=1">
 							<list-right ref="listRight" :video="item"></list-right>
 						</view>
 					</view>
@@ -25,7 +25,8 @@
 				</swiper-item>
 			</swiper>
 		</view>
-		<view class="center-box" v-show="isShowPause && !isPause" @click="clickPause"><text class="cuIcon-stop"></text></view>
+		<view class="center-box" v-show="isShowPause && !isPause" @click="clickPause"><text class="cuIcon-stop"></text>
+		</view>
 		<view class="center-box" v-show="isPause" @click="clickPlay"><text class="cuIcon-playfill"></text></view>
 	</view>
 </template>
@@ -43,7 +44,7 @@
 		data() {
 			return {
 				baseUrl: getApp().globalData.baseUrl,
-				videoList: getApp().globalData.videoList,
+				videoList: [],
 				currentPage: getApp().globalData.currentPage,
 				isPause: false,
 				isComment: false,
@@ -53,7 +54,7 @@
 		mounted() {
 			if (!getApp().globalData.isSearch) {
 				uni.request({
-					url: this.baseUrl + '/video/showAllVideos',
+					url: this.baseUrl + '/video/showAllVideos?page=1',
 					method: "POST",
 					header: {
 						'content-type': 'application/json',
@@ -62,38 +63,21 @@
 					success: (res) => {
 						if (res.data.code === 200) {
 							this.videoList = res.data.data.list
+							// console.log(this.currentPage)
+							setTimeout(() => {
+								// let doms = "players" + (this.currentPage)
+								this.$refs.players[this.currentPage].playFromHead(this.currentPage)
+							}, 500)
 						}
 					}
 				})
 			}
 		},
 		methods: {
-			// 播放完成后滑动到下一页
-			toNextVideo(index) {
-				this.currentPage = index + 1
-				if (index + 1 === this.$refs.players.length) {
-					this.$refs.players[index].pause();
-					return
-				}
-				this.$refs.players[index].pause();
-				this.$refs.players[this.currentPage].playFromHead(this.currentPage);
-			},
 			// 双击点赞
 			follow(index) {
 				this.$refs.listRight[index].handleFollow();
 			},
-			/*
-			// 开启旋转动画
-			playAnimate(index) {
-				this.isPause = false
-				this.$refs.listRight[index].playAnimate();
-			},
-			// 暂停旋转动画
-			pauseAnimate(index) {
-				this.isPause = true
-				this.$refs.listRight[index].pauseAnimate();
-			},
-			*/
 			clickPause() {
 				this.isPause = true
 				this.$store.commit('setVideoStatus', !this.isPause)
@@ -105,8 +89,12 @@
 			// 上滑与下滑功能实现
 			slider(e) {
 				const targetPage = e.detail.current;
+				console.log("targetPage", targetPage)
 				//
-				let data = {currentTime:0,duration:0}
+				let data = {
+					currentTime: 0,
+					duration: 0
+				}
 				this.$store.commit('setVideoTimeList', data)
 				this.$store.commit('setVideoStatus', true)
 				this.$store.commit('setVideoProgress', 0)
@@ -118,21 +106,48 @@
 				// 滑动切换视频
 				if (targetPage === this.currentPage + 1) {
 					// console.log("切换到下一个视频");
+					this.$store.commit('setVideoIndex', targetPage) // 切换
+					console.log("pause before", this.currentPage)
 					this.$refs.players[this.currentPage].pause();
 					if (targetPage != this.$refs.players.length) {
 						this.$refs.players[targetPage].playFromHead(targetPage);
+					} else {
+						// 继续加载视频
+						uni.request({
+							url: this.baseUrl + '/video/showAllVideos?page=2',
+							method: "POST",
+							header: {
+								'content-type': 'application/json',
+								'x-token': getApp().globalData.getGlobalToken()
+							},
+							success: (res) => {
+								if (res.data.code === 200) {
+									this.videoList.push(...res.data.data.list)
+									console.log(this.videoList)
+								}
+							}
+						})
+						this.$store.commit('setVideoIndex', targetPage) // 切换
+						this.$refs.players[this.currentPage].pause();
+						setTimeout(() => {
+							this.$refs.players[targetPage].playFromHead(targetPage);
+						}, 500)
 					}
 				} else if (targetPage === this.currentPage - 1) {
 					// console.log("切换到上一个视频");
+					this.$store.commit('setVideoIndex', targetPage) // 切换
+					// this.$store.commit('setVideoIndex', 1) // 切换
 					if (this.currentPage != this.$refs.players.length) {
+						console.log("pause before", this.currentPage)
+						// console.log(this.$refs.players)
 						this.$refs.players[this.currentPage].pause();
 					}
 					this.$refs.players[targetPage].playFromHead(targetPage);
 				}
 				this.currentPage = targetPage;
 			},
-			clickVideo(val){
-				this.isShowPause = !this.isShowPause 
+			clickVideo(val) {
+				this.isShowPause = !this.isShowPause
 				setTimeout(() => {
 					this.isShowPause = !this.isShowPause
 				}, 3500)
@@ -185,7 +200,7 @@
 	.swiper {
 		height: calc(100vh - 100rpx);
 		// height: 750rpx;
-		width: 100%;	
+		width: 100%;
 	}
 
 	.swiper-item {

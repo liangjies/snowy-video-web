@@ -34,16 +34,16 @@
 			follow(index) {
 				this.$refs.listRight.handleFollow();
 			},
-			// 开启旋转动画
-			playAnimate(index) {
-				this.isPause = false
-				this.$refs.listRight.playAnimate();
-			},
-			// 暂停旋转动画
-			pauseAnimate(index) {
-				this.isPause = true
-				this.$refs.listRight.pauseAnimate();
-			},
+			// // 开启旋转动画
+			// playAnimate(index) {
+			// 	this.isPause = false
+			// 	this.$refs.listRight.playAnimate();
+			// },
+			// // 暂停旋转动画
+			// pauseAnimate(index) {
+			// 	this.isPause = true
+			// 	this.$refs.listRight.pauseAnimate();
+			// },
 			clickPlay() {
 				this.isPause = false
 				this.$refs.listRight.playAnimate();
