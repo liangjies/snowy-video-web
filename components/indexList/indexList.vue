@@ -3,17 +3,20 @@
 		<block v-for="(item,index) in videoList" :key="item.id">
 			<view class="cu-card case" @click="toVideoPage(index)">
 				<view class="cu-item shadow">
-					<view class="image" style="height: 450rpx; width: 100%;background-repeat: no-repeat; background-size: cover;"
-					 :style="{'background-image':'url(' + fileUrl + item.coverPath + ')'}">
+					<view class="image"
+						style="height: 450rpx; width: 100%;background-repeat: no-repeat; background-size: cover;"
+						:style="{'background-image':'url(' + fileUrl + item.coverPath + ')'}">
 						<!-- 使用 image 可能造成手机闪屏 -->
-						<image :src="fileUrl + item.coverPath" mode="aspectFill" style="height: 100%; width: 100%;"></image>
+						<image :src="fileUrl + item.coverPath" mode="aspectFill" style="height: 100%; width: 100%;">
+						</image>
 						<!-- <view class="cu-tag bg-red">hot</view> -->
 						<view class="cu-bar bg-shadeBottom"> <text class="text-cut">{{item.videoDesc}}</text></view>
 					</view>
 					<view class="cu-list menu-avatar">
 						<view class="cu-item">
 							<view class="cu-avatar round lg">
-								<image :src="item.avatar" mode="widthFix" style="height: 100%; width: 100%; border-radius: 50%;"></image>
+								<image :src="item.avatar" mode="widthFix"
+									style="height: 100%; width: 100%; border-radius: 50%;"></image>
 							</view>
 							<view class="content flex-sub">
 								<view class="text-grey">{{item.nickname}}</view>
@@ -43,11 +46,11 @@
 				fileUrl: getApp().globalData.fileUrl,
 				videoList: [],
 				isNoMore: false,
-				
+
 			}
 		},
 		methods: {
-			getAllVideoList(page,isSaveRecord,searchContent) {
+			getAllVideoList(page, isSaveRecord, searchContent) {
 				if (!isSaveRecord) {
 					isSaveRecord = 0
 				}
@@ -90,10 +93,10 @@
 			setComments() {
 				let user = getApp().globalData.getGlobalUserInfo()
 				this.videoList.forEach(item => {
-					this.getComments(item,user)
+					this.getComments(item, user)
 				})
 			},
-			getComments(video,user) {
+			getComments(video, user) {
 				uni.request({
 					url: this.baseUrl + '/video/getVideoComments?videoId=' + video.id,
 					method: 'POST',
@@ -105,22 +108,37 @@
 						if (res.data.status === 200) {
 							// 给对象额外添加一个数据字段时，视图没有立即渲染
 							// 此时可以使用 $set
-							this.$set(video,"comments",res.data.data.length)
+							this.$set(video, "comments", res.data.data.length)
 						}
 					}
 				})
 			},
 			toVideoPage(index) {
 				getApp().globalData.currentPage = index
+				console.log(uni.getSystemInfoSync().uniPlatform)
 				if (getApp().globalData.isSearch) {
 					// 如果是查询状态，则关闭其他页面
+					// #ifdef APP-PLUS
 					uni.reLaunch({
 						url: '../../pages/nvueSwiper/nvueSwiper',
 					})
+					//#endif
+					// #ifdef H5
+					uni.reLaunch({
+						url: '../../pages/video/video',
+					})
+					//#endif
 				} else {
+					// #ifdef APP-PLUS
 					uni.navigateTo({
 						url: '../../pages/nvueSwiper/nvueSwiper',
 					})
+					//#endif
+					// #ifdef H5
+					uni.navigateTo({
+						url: '../../pages/video/video',
+					})
+					//#endif
 				}
 			}
 		}
