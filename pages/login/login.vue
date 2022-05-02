@@ -37,7 +37,13 @@
 			}
 		},
 		onLoad() {
-
+			// 判断是否登录
+			const token = getApp().globalData.getGlobalToken()
+			if(token != ""){
+				uni.switchTab({
+					url:'../index/index'
+				})
+			}
 		},
 		methods: {
 			handleLogin() {

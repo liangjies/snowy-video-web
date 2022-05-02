@@ -115,11 +115,11 @@
 				if (getApp().globalData.isSearch) {
 					// 如果是查询状态，则关闭其他页面
 					uni.reLaunch({
-						url: '../../pages/video/video',
+						url: '../../pages/nvueSwiper/nvueSwiper',
 					})
 				} else {
 					uni.navigateTo({
-						url: '../../pages/video/video',
+						url: '../../pages/nvueSwiper/nvueSwiper',
 					})
 				}
 			}

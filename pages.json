@@ -1,18 +1,26 @@
 {
-	"pages": [
-	{
+	"pages": [{
 			"path": "pages/login/login",
 			"style": {}
 		},
 		{
 			"path": "pages/comment/comment",
 			"style": {}
+		}, {
+			"path": "pages/nvueSwiper/nvueSwiper",
+			"style": {
+				"app-plus": {
+					"titleNView": false,
+					"bounce": "none"
+				}
+			}
+
 		},
 		{
 			"path": "pages/report/report",
 			"style": {}
 		},
-	
+
 		{
 			"path": "pages/friend/friend",
 			"style": {}
@@ -60,17 +68,15 @@
 		}, {
 			"path": "pages/upload/upload",
 			"style": {}
+		}, {
+			"path": "pages/test/test",
+			"style": {
+				"navigationBarTitleText": "",
+				"enablePullDownRefresh": false
+			}
+
 		}
-        ,{
-            "path" : "pages/test/test",
-            "style" :                                                                                    
-            {
-                "navigationBarTitleText": "",
-                "enablePullDownRefresh": false
-            }
-            
-        }
-    ],
+	],
 	"tabBar": {
 		"custom": true,
 		"color": "#7A7E83",
