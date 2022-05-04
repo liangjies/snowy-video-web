@@ -1,34 +1,6 @@
 <template>
 	<view class="container">
-		<!--	 
-		注意：这是 App 所用页面，请勿引入微信小程序或浏览器运行，最好运行在真机
-		 
-		1. new_index.nvue、index.nvue这两个是App页面
-		 
-		2. index.nvue - 页面预加载使用 - 在线预加载方案
-		 
-		3. 另外：data.js 是上一版本留下的假数据，这一版改成了 URL 请求了（如不需要可以删除，也可作为后端请求参考）
-		 
-		4. 请各位大神多多留手，我已经把请求内存开到最大了
-		 
-		5. 视频 id 切记是字符串类型
-		 
-		6. 这里仅 App 端引入了 App 端专用评论，小程序 、H5 引入的时候 可以作为参考
-		
-		【
-			App、小程序、H5评论请参考插件：https://ext.dcloud.net.cn/plugin?id=7875
-		】
-		 -->
 		<view :style="'width: '+ windowWidth +'px; height: '+ boxStyle.height +'px;'">
-			<!-- 
-			 1.这里的 swiper 不是用来控制视频滑动的，而是用来控制左右滑动的，如果不需要的可以改成 view
-			 
-			 2.为了 视频无限加载，已经把 21 行的 appear 去掉了，加上了 loadmore 方法（第10行）
-			 
-			 3.由于方法比较多，可以采取下面的方式查看代码：
-			 （1）Mac：按住 option 键，然后点击方法名，即可跳转到方法
-			 （2）windows：按住 Alt 键，然后鼠标左击，即可跳转到方法
-			 -->
 			<list @loadmore="getData" @scroll="scrolls" :loadmoreoffset="wHeight" :show-scrollbar="false"
 				ref="listBox" :pagingEnabled="true" :scrollable="true">
 				<!-- 刷新模块 -->
@@ -40,7 +12,6 @@
 						</image>
 					</loading>
 				</refresh>
-
 				<!-- 循环数据 -->
 				<cell v-for="(item,i) in dataList" :key="i">
 					<!-- 用div把视频模组套起来 -->
@@ -76,7 +47,7 @@
 							3.其他的下面有详解
 							 -->
 							<video v-if="Math.abs(k-i)<=1" :ref="'item'+i" :id="item.id" :loop="true"
-								:src="item.videoPath" :muted="item.isplay" @play="playIngs(i)"
+								:src="item.isLocal ? fileUrl + item.videoPath: item.videoPath" :muted="item.isplay" @play="playIngs(i)"
 								:enable-progress-gesture="false" :page-gesture="false" :controls="false"
 								:http-cache="true" :show-loading="false" :show-fullscreen-btn="false"
 								:show-center-play-btn="false" :style="boxStyle" :object-fit="object_fit"
@@ -220,6 +191,7 @@
 	export default {
 		data() {
 			return {
+				fileUrl: getApp().globalData.fileUrl,
 				//下面打🌟号的是必须要的基础字段
 				//下面打💗号的是拥有滑动条的必须字段
 				dataList: [], //用于数据循环的列表🌟💗
