@@ -24,8 +24,9 @@
 			</view>
 			<scroll-view scroll-x class="bg-white nav">
 				<view class="flex text-center">
-					<view class="cu-item flex-sub" v-for="(item,index) in tabList" :class="index==tabCur?'text-blue current':''" :key="index"
-					 @click="tabSelect" :data-id="index">
+					<view class="cu-item flex-sub" v-for="(item,index) in tabList"
+						:class="index==tabCur?'text-blue current':''" :key="index"
+						@click="tabSelect" :data-id="index">
 						{{item}}
 					</view>
 				</view>
@@ -39,11 +40,11 @@
 			<text class="cuIcon-pullright"></text>
 		</view>
 		<drawer-left :isAvatarEdit="isAvatarEdit" :isMe="true"
-				@handleEdit="handleEdit"
-				@changeGender="changeGender"
-				@changeNickName="changeNickName"
-				@changeAvatar="changeAvatar"
-				@changeBackgroundImage="changeBackgroundImage"></drawer-left>
+			@handleEdit="handleEdit"
+			@changeGender="changeGender"
+			@changeNickName="changeNickName"
+			@changeAvatar="changeAvatar"
+			@changeBackgroundImage="changeBackgroundImage"></drawer-left>
 	</view>
 </template>
 
@@ -106,7 +107,12 @@
 		methods: {
 			// 判断token是否过期
 			isUserToken(user) {
-				if (user.userToken === null) {
+				const token = getApp().globalData.getGlobalToken()
+				const payload = JSON.parse(atob(token.split('.')[1]));
+				const expDate = new Date(new Date(0).setUTCSeconds(payload.exp)); // 得到正常的js日期時間
+				const timestamp = Math.floor(new Date() / 1000);
+				if (user.userToken === null ||  expDate < timestamp) {
+					getApp().globalData.setGlobalToken(null)
 					let time = 3
 					let interval = setInterval(() => {
 						uni.showToast({
@@ -116,7 +122,7 @@
 						})
 						time--
 					}, 1000)
-				
+
 					setTimeout(() => {
 						clearInterval(interval)
 						uni.reLaunch({
@@ -124,6 +130,10 @@
 						})
 					}, 3500)
 					return
+				}
+				// token过期时间少于6小时替换token
+				if (expDate < timestamp + 6 * 60 * 60) {
+					// 替换token
 				}
 			},
 			// 获取用户信息
@@ -136,14 +146,15 @@
 						'x-token': getApp().globalData.getGlobalToken()
 					},
 					success: (res) => {
-						if (res.data.code === 200) {	
+						if (res.data.code === 200) {
 							let data = res.data.data
 							getApp().globalData.setGlobalUserInfo(data)
 							if (data.avatar != null && data.avatar != '' && data.avatar != undefined) {
 								// this.avatarUrl = getApp().globalData.fileUrl + data.avatar
 								this.avatarUrl = data.avatar
 							}
-							if (data.backgroundImage != null && data.backgroundImage != '' && data.backgroundImage != undefined) {
+							if (data.backgroundImage != null && data.backgroundImage != '' && data
+								.backgroundImage != undefined) {
 								// this.backgroundImage = getApp().globalData.fileUrl + data.backgroundImage
 								this.backgroundImage = data.backgroundImage
 							}
@@ -172,7 +183,7 @@
 								})
 								time--
 							}, 1000)
-				
+
 							setTimeout(() => {
 								clearInterval(interval)
 								uni.reLaunch({
