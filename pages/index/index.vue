@@ -59,7 +59,53 @@
 		// 仅第一次进入会触发onLoad
 		onLoad() {
 			this.screenWidth = uni.getSystemInfo().screenWidth
-		}
+			let user = getApp().globalData.getGlobalUserInfo()
+			this.isUserToken()
+		},
+		methods:{
+			// 判断token是否过期
+			isUserToken() {
+				const token = getApp().globalData.getGlobalToken()
+				if (token === undefined || token === "") {
+					getApp().globalData.setGlobalToken("")
+					uni.reLaunch({
+						url: '../login/login'
+					})
+					return
+				}
+
+				const payload = JSON.parse(atob(token.split('.')[1]));
+				const expDate = new Date(new Date(0).setUTCSeconds(payload.exp)); // 得到正常的js日期時間
+				const timestamp = Math.floor(new Date() / 1000);
+				if (expDate < timestamp) {
+					getApp().globalData.setGlobalToken("")
+					uni.reLaunch({
+						url: '../login/login'
+					})
+					return
+				}
+				// token过期时间少于6小时替换token
+				if (expDate < timestamp + 6 * 60 * 60) {
+					// 替换token
+					uni.request({
+						url: getApp().globalData.baseUrl + '/user/query',
+						method: "POST",
+						header: {
+							'content-type': 'application/json',
+							'x-token': getApp().globalData.getGlobalToken()
+						},
+						data: {
+							'token': getApp().globalData.getGlobalToken()
+						},
+						success: (res) => {
+							if (res.data.code === 200) {
+								getApp().globalData.setGlobalToken(res.data.data.token)
+							}
+						},
+					})
+				}
+			},
+		},
 	}
 </script>
 

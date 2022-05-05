@@ -86,6 +86,11 @@
 							if (data.page === data.total || this.videoList.length === 0) {
 								this.isNoMore = true
 							}
+						} else if (res.data.data.reload == true) {
+							getApp().globalData.setGlobalToken("")
+							uni.reLaunch({
+								url: '../login/login'
+							})
 						}
 					}
 				})

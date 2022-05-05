@@ -25,8 +25,7 @@
 			<scroll-view scroll-x class="bg-white nav">
 				<view class="flex text-center">
 					<view class="cu-item flex-sub" v-for="(item,index) in tabList"
-						:class="index==tabCur?'text-blue current':''" :key="index"
-						@click="tabSelect" :data-id="index">
+						:class="index==tabCur?'text-blue current':''" :key="index" @click="tabSelect" :data-id="index">
 						{{item}}
 					</view>
 				</view>
@@ -39,11 +38,8 @@
 		<view :class="{show: isAvatarEdit}" class="DrawerClose" @click="handleEdit">
 			<text class="cuIcon-pullright"></text>
 		</view>
-		<drawer-left :isAvatarEdit="isAvatarEdit" :isMe="true"
-			@handleEdit="handleEdit"
-			@changeGender="changeGender"
-			@changeNickName="changeNickName"
-			@changeAvatar="changeAvatar"
+		<drawer-left :isAvatarEdit="isAvatarEdit" :isMe="true" @handleEdit="handleEdit" @changeGender="changeGender"
+			@changeNickName="changeNickName" @changeAvatar="changeAvatar"
 			@changeBackgroundImage="changeBackgroundImage"></drawer-left>
 	</view>
 </template>
@@ -98,7 +94,7 @@
 			let user = getApp().globalData.getGlobalUserInfo()
 			this.userId = user.id
 			this.isUserToken(user)
-			this.getUserData(user)
+			this.getUserData()
 		},
 		onShow() {
 			this.isAvatarEdit = false
@@ -106,34 +102,46 @@
 		},
 		methods: {
 			// 判断token是否过期
-			isUserToken(user) {
+			isUserToken() {
 				const token = getApp().globalData.getGlobalToken()
+				if (token === undefined || token === "") {
+					getApp().globalData.setGlobalToken("")
+					uni.reLaunch({
+						url: '../login/login'
+					})
+					return
+				}
+
 				const payload = JSON.parse(atob(token.split('.')[1]));
 				const expDate = new Date(new Date(0).setUTCSeconds(payload.exp)); // 得到正常的js日期時間
 				const timestamp = Math.floor(new Date() / 1000);
-				if (user.userToken === null ||  expDate < timestamp) {
-					getApp().globalData.setGlobalToken(null)
-					let time = 3
-					let interval = setInterval(() => {
-						uni.showToast({
-							title: "当前登录信息已过期\r\n" + time + "秒后将跳转到登录页面",
-							icon: "none",
-							duration: 1000
-						})
-						time--
-					}, 1000)
-
-					setTimeout(() => {
-						clearInterval(interval)
-						uni.reLaunch({
-							url: '../login/login'
-						})
-					}, 3500)
+				if (expDate < timestamp) {
+					getApp().globalData.setGlobalToken("")
+					uni.reLaunch({
+						url: '../login/login'
+					})
 					return
 				}
 				// token过期时间少于6小时替换token
 				if (expDate < timestamp + 6 * 60 * 60) {
 					// 替换token
+					uni.request({
+						url: getApp().globalData.baseUrl + '/user/query',
+						method: "POST",
+						header: {
+							'content-type': 'application/json',
+							'x-token': getApp().globalData.getGlobalToken()
+						},
+						data: {
+							'token': getApp().globalData.getGlobalToken()
+						},
+						success: (res) => {
+							if (res.data.code === 200) {
+								getApp().globalData.setGlobalToken(res.data.data.token)
+							}
+						},
+					})
+
 				}
 			},
 			// 获取用户信息
@@ -173,7 +181,8 @@
 									class: 'cuIcon-female bg-pink'
 								}
 							}
-						} else if (res.data.status === 502) {
+						} else if (res.data.data.reload == true) {
+							getApp().globalData.setGlobalToken(null)
 							let time = 3
 							let interval = setInterval(() => {
 								uni.showToast({
