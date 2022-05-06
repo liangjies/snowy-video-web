@@ -1,7 +1,7 @@
 <template>
 	<view class="video-container">
 		<block v-for="(item,index) in videoList" :key="item.id">
-			<view class="cu-card case" @click="toVideoPage(index)">
+			<view class="cu-card case" @click="toVideoPage(item.id,index)">
 				<view class="cu-item shadow">
 					<view class="image"
 						style="height: 450rpx; width: 100%;background-repeat: no-repeat; background-size: cover;"
@@ -58,10 +58,11 @@
 					searchContent = ''
 				}
 				uni.request({
-					url: this.baseUrl + '/video/showVideos?page=' + page + '&isSaveRecord=' + isSaveRecord,
+					url: this.baseUrl + '/video/showVideos?isSaveRecord=' + isSaveRecord,
 					method: "POST",
 					data: {
-						'videoDesc': searchContent
+						'videoDesc': searchContent,
+						'page': page,
 					},
 					header: {
 						'content-type': 'application/json',
@@ -83,7 +84,7 @@
 								getApp().globalData.page = data.page
 							}
 							getApp().globalData.totalPage = data.total
-							if (data.page === data.total || this.videoList.length === 0) {
+							if (data.list.length === 0) {
 								this.isNoMore = true
 							}
 						} else if (res.data.data.reload == true) {
@@ -118,30 +119,30 @@
 					}
 				})
 			},
-			toVideoPage(index) {
+			toVideoPage(videoId, index) {
 				getApp().globalData.currentPage = index
 				console.log(uni.getSystemInfoSync().uniPlatform)
 				if (getApp().globalData.isSearch) {
 					// 如果是查询状态，则关闭其他页面
 					// #ifdef APP-PLUS
 					uni.reLaunch({
-						url: '../../pages/nvueSwiper/nvueSwiper',
+						url: '../../pages/nvueSwiper/nvueSwiper?videoId=' + videoId,
 					})
 					//#endif
 					// #ifdef H5
 					uni.reLaunch({
-						url: '../../pages/video/video',
+						url: '../../pages/video/video?videoId=' + videoId,
 					})
 					//#endif
 				} else {
 					// #ifdef APP-PLUS
 					uni.navigateTo({
-						url: '../../pages/nvueSwiper/nvueSwiper',
+						url: '../../pages/nvueSwiper/nvueSwiper?videoId=' + videoId,
 					})
 					//#endif
 					// #ifdef H5
 					uni.navigateTo({
-						url: '../../pages/video/video',
+						url: '../../pages/video/video?videoId=' + videoId,
 					})
 					//#endif
 				}

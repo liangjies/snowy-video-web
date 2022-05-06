@@ -1,8 +1,8 @@
 <template>
 	<view class="container">
 		<view :style="'width: '+ windowWidth +'px; height: '+ boxStyle.height +'px;'">
-			<list @loadmore="getData" @scroll="scrolls" :loadmoreoffset="wHeight" :show-scrollbar="false"
-				ref="listBox" :pagingEnabled="true" :scrollable="true">
+			<list @loadmore="getData(3)" @scroll="scrolls" :loadmoreoffset="wHeight" :show-scrollbar="false" ref="listBox"
+				:pagingEnabled="true" :scrollable="true">
 				<!-- 刷新模块 -->
 				<refresh class="refresh" @refresh="onrefresh" @pullingdown="onpullingdown"
 					:display="refreshing ? 'show' : 'hide'">
@@ -47,9 +47,9 @@
 							3.其他的下面有详解
 							 -->
 							<video v-if="Math.abs(k-i)<=1" :ref="'item'+i" :id="item.id" :loop="true"
-								:src="item.isLocal ? fileUrl + item.videoPath: item.videoPath" :muted="item.isplay" @play="playIngs(i)"
-								:enable-progress-gesture="false" :page-gesture="false" :controls="false"
-								:http-cache="true" :show-loading="false" :show-fullscreen-btn="false"
+								:src="item.isLocal ? fileUrl + item.videoPath: item.videoPath" :muted="item.isplay"
+								@play="playIngs(i)" :enable-progress-gesture="false" :page-gesture="false"
+								:controls="false" :http-cache="true" :show-loading="false" :show-fullscreen-btn="false"
 								:show-center-play-btn="false" :style="boxStyle" :object-fit="object_fit"
 								@timeupdate="timeupdate($event,i)"></video>
 							<!-- 这里是封面 -->
@@ -320,7 +320,19 @@
 			this.boxStyle.width = this.windowWidth + 'px' //给宽度加px
 			this.wHeight = uni.getSystemInfoSync().screenHeight; //获取屏幕高度
 			this.boxStyle.height = this.wHeight - this.deleteHeight; //改变视频高度
-			this.get() //这一步，加载视频数据
+
+			let curPage = getCurrentPages();
+			let params = curPage[curPage.length - 1].options; //获取当前页面参数，如果有则返回参数的对象，没有参数返回空对象{}
+			if (params.videoId != undefined) {
+				this.get(params.videoId) //这一步，加载视频数据
+				setTimeout(() => {
+				  this.getData(2) //这一步，加载视频数据
+				}, 500)
+			} else {
+				this.get(params.videoId) //这一步，加载视频数据
+			}
+
+
 		},
 		onReady() {},
 		methods: {
@@ -362,21 +374,25 @@
 					})
 				}
 			},
-			getData() {
+			getData(pageSize) {
 				// 这里就是数据加载完以后再向后端发送数据的地方
 				console.log("数据加载完再向后端发送数据")
-				console.log("wHeight",this.wHeight)
+				console.log("wHeight", this.wHeight)
 				uni.request({
 					// url: 'https://bdb24c6d-8c19-4f80-8e7e-c9c9f037f131.bspapp.com/video',
 					// method: 'POST',
 					// data:{
 					// 	info: 'get_video'
 					// },
-					url: getApp().globalData.baseUrl + '/video/showAllVideos?page=2',
+					url: getApp().globalData.baseUrl + '/video/showAllVideos',
 					method: "POST",
 					header: {
 						'content-type': 'application/json',
 						'x-token': getApp().globalData.getGlobalToken()
+					},
+					data: {
+						page: 2,
+						pageSize: pageSize,
 					},
 					success: (res) => {
 						var msg = res.data.data.list
@@ -532,7 +548,7 @@
 					}
 				}
 			},
-			get() {
+			get(videoId) {
 				// 这个方法主要就是用来第一次进入视频播放时用来处理的
 				// this.dataList = userList;//这个就是赋值加载视频啦
 				uni.request({
@@ -546,6 +562,9 @@
 					header: {
 						'content-type': 'application/json',
 						'x-token': getApp().globalData.getGlobalToken()
+					},
+					data: {
+						videoId: videoId,
 					},
 					success: (res) => {
 						var msg = res.data.data.list
