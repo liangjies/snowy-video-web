@@ -23,7 +23,7 @@
 		<view :style="'width: '+ Width +'px; height: '+ (Height/num) +'px; margin-top: 20upx; background-color: #242424; display: flex; flex-direction: column;'">
 			<text v-if="pinlunList.length == 0" :style="'font-size: 14px; font-weight: bold; color: #a3a1a4; margin-top: 150upx; margin-left: '+ (Width/2.9) +'px; position: absolute;'">～ 快来评论吧 ～</text>
 			<list :show-scrollbar="false" :scrollable="true">
-				<cell v-for="(list,index) in pinlunList">
+				<cell v-for="(list,index) in pinlunList" :key="index">
 					<view :style="'width: '+ Width +'px; display: flex; flex-direction: row;'">
 						<!-- 1.用户的头像 -->
 						<image :src="list.headimage" mode="aspectFill" style="width: 75upx; height: 75upx; border-radius: 50upx; margin-top: 40upx; margin-left: 30upx;"></image>

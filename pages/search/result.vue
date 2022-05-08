@@ -50,11 +50,12 @@
 		// 上拉刷新
 		onReachBottom() {
 			// 判断当前页数和总页数是否相等
-			if (this.page === this.totalPage) {
+			if (this.page === getApp().globalData.totalPage) {
 				this.isNoMore = true
 				return
 			}
 			let nextPage = this.page + 1
+			this.page = nextPage
 			this.$refs.videoList.getAllVideoList(nextPage, this.isSaveRecord, this.searchContent)
 		},
 		// 仅第一次进入会触发onLoad

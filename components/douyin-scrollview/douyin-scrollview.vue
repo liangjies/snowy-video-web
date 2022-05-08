@@ -5,7 +5,7 @@
 		<text style="font-size: 12px; font-weight: bold; text-align: center; color: #FFFFFF;">{{pinlunNum}}条评论</text>
 		<scroll-view :style="'width: '+ Width +'px; height: '+ (Height/num) +'px; margin-top: 10px; background-color: #242424; display: flex; flex-direction: column;'" :scroll-y="true">
 			<text v-if="pinlunList.length == 0" :style="'font-size: 14px; font-weight: bold; color: #a3a1a4; margin-top: 75px; margin-left: '+ (Width/2.9) +'px; position: absolute;'">～ 快来评论吧 ～</text>
-			<block v-for="(list,index) in pinlunList">
+			<block v-for="(list,index) in pinlunList" :key="index">
 				<view :style="'width: '+ Width +'px; display: flex; flex-direction: row;'">
 					<!-- 1.用户的头像 -->
 					<image :src="list.headimage" mode="aspectFill" style="width: 37.5px; height: 37.5px; border-radius: 25px; margin-top: 20px; margin-left: 15px;"></image>

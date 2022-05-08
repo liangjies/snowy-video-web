@@ -10,6 +10,7 @@
 					<slot name="content"></slot>
 				</view>
 				<slot name="right"></slot>
+				<view class="icon cuIcon-search" @click="handleSearch"></view>
 			</view>
 		</view>
 	</view>
@@ -59,11 +60,21 @@
 				uni.navigateBack({
 					delta: 1
 				});
-			}
+			},
+			handleSearch() {
+				getApp().globalData.isSearch = true
+				uni.navigateTo({
+					url: '../../pages/search/search'
+				})
+			},
 		}
 	}
 </script>
 
-<style>
-
+<style scoped>
+	.icon{
+		position: absolute;
+		right: 20px;
+	}
 </style>
+

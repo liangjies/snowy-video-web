@@ -3,10 +3,12 @@
 		<cu-custom bgColor="bg-gradual-blue">
 			<block slot="content">Snowy 短视频</block>
 		</cu-custom>
+		
 		<!--轮播图-->
 		<!--<intro-swiper></intro-swiper>-->
 		<index-list ref="videoList"></index-list>
 	</view>
+	
 </template>
 
 <script>
@@ -109,6 +111,5 @@
 	}
 </script>
 
-<style lang="scss">
-
+<style scoped>
 </style>

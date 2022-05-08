@@ -7,8 +7,8 @@
 						style="height: 450rpx; width: 100%;background-repeat: no-repeat; background-size: cover;"
 						:style="{'background-image':'url(' + fileUrl + item.coverPath + ')'}">
 						<!-- 使用 image 可能造成手机闪屏 -->
-						<image :src="fileUrl + item.coverPath" mode="aspectFill" style="height: 100%; width: 100%;">
-						</image>
+						<!-- <image :src="fileUrl + item.coverPath" mode="aspectFill" style="height: 100%; width: 100%;">
+						</image> -->
 						<!-- <view class="cu-tag bg-red">hot</view> -->
 						<view class="cu-bar bg-shadeBottom"> <text class="text-cut">{{item.videoDesc}}</text></view>
 					</view>
@@ -83,8 +83,8 @@
 							if (data.page > getApp().globalData.page) {
 								getApp().globalData.page = data.page
 							}
-							getApp().globalData.totalPage = data.total
-							if (data.list.length === 0) {
+							getApp().globalData.totalPage = Math.ceil(data.total/data.pageSize)
+							if (data.list.length === 0 || data.list.length<data.pageSize) {
 								this.isNoMore = true
 							}
 						} else if (res.data.data.reload == true) {
