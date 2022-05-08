@@ -1,8 +1,8 @@
 <template>
 	<view class="container">
 		<view :style="'width: '+ windowWidth +'px; height: '+ boxStyle.height +'px;'">
-			<list @loadmore="getData(3)" @scroll="scrolls" :loadmoreoffset="wHeight" :show-scrollbar="false" ref="listBox"
-				:pagingEnabled="true" :scrollable="true">
+			<list @loadmore="getData(3,3)" @scroll="scrolls" :loadmoreoffset="wHeight" :show-scrollbar="false"
+				ref="listBox" :pagingEnabled="true" :scrollable="true">
 				<!-- 刷新模块 -->
 				<refresh class="refresh" @refresh="onrefresh" @pullingdown="onpullingdown"
 					:display="refreshing ? 'show' : 'hide'">
@@ -49,9 +49,9 @@
 							<video v-if="Math.abs(k-i)<=1" :ref="'item'+i" :id="item.id" :loop="true"
 								:src="item.isLocal ? fileUrl + item.videoPath: item.videoPath" :muted="item.isplay"
 								@play="playIngs(i)" :enable-progress-gesture="false" :page-gesture="false"
-								:controls="false" :http-cache="true" :show-loading="false" :show-fullscreen-btn="false"
+								:controls="false" :http-cache="false" :show-loading="false" :show-fullscreen-btn="false"
 								:show-center-play-btn="false" :style="boxStyle" :object-fit="object_fit"
-								@timeupdate="timeupdate($event,i)"></video>
+								@timeupdate="timeupdate($event,i)" :codec="hardware"></video>
 							<!-- 这里是封面 -->
 							<image v-if="!item.playIng"
 								:src="item.coverPath+'?x-oss-process=video/snapshot,t_100,f_jpg'" :mode="mode"
@@ -326,10 +326,10 @@
 			if (params.videoId != undefined) {
 				this.get(params.videoId) //这一步，加载视频数据
 				setTimeout(() => {
-				  this.getData(2) //这一步，加载视频数据
+					this.getData(2, 2) //这一步，加载视频数据
 				}, 500)
 			} else {
-				this.get(params.videoId) //这一步，加载视频数据
+				this.get(1, params.videoId) //这一步，加载视频数据
 			}
 
 
@@ -374,7 +374,7 @@
 					})
 				}
 			},
-			getData(pageSize) {
+			getData(page, pageSize) {
 				// 这里就是数据加载完以后再向后端发送数据的地方
 				console.log("数据加载完再向后端发送数据")
 				console.log("wHeight", this.wHeight)
@@ -391,7 +391,7 @@
 						'x-token': getApp().globalData.getGlobalToken()
 					},
 					data: {
-						page: 2,
+						page: page,
 						pageSize: pageSize,
 					},
 					success: (res) => {

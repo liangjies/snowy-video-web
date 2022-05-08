@@ -52,12 +52,13 @@
 			}
 		},
 		created() {
-			console.log("created")
 			let curPage = getCurrentPages();
 			let params = curPage[curPage.length - 1].options; //获取当前页面参数，如果有则返回参数的对象，没有参数返回空对象{}
 			console.log("videoId",params.videoId)
 		},
 		mounted() {
+			let curPage = getCurrentPages();
+			let params = curPage[curPage.length - 1].options; //获取当前页面参数，如果有则返回参数的对象，没有参数返回空对象{}
 			if (!getApp().globalData.isSearch) {
 				uni.request({
 					url: this.baseUrl + '/video/showAllVideos',
@@ -68,6 +69,7 @@
 					},
 					data: {
 						page: 1,
+						videoId: params.videoId,
 					},
 					success: (res) => {
 						if (res.data.code === 200) {
@@ -77,6 +79,27 @@
 								// let doms = "players" + (this.currentPage)
 								this.$refs.players[this.currentPage].playFromHead(this.currentPage)
 							}, 500)
+						}
+					}
+				})
+			}
+			if(params.videoId!=undefined){
+				// 继续加载视频
+				uni.request({
+					url: this.baseUrl + '/video/showAllVideos?page=2',
+					method: "POST",
+					header: {
+						'content-type': 'application/json',
+						'x-token': getApp().globalData.getGlobalToken()
+					},
+					data: {
+						page: 1,
+						pageSize: 2,
+					},
+					success: (res) => {
+						if (res.data.code === 200) {
+							this.videoList.push(...res.data.data.list)
+							console.log(this.videoList)
 						}
 					}
 				})

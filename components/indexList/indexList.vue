@@ -120,7 +120,7 @@
 				})
 			},
 			toVideoPage(videoId, index) {
-				getApp().globalData.currentPage = index
+				getApp().globalData.currentPage = 0
 				console.log(uni.getSystemInfoSync().uniPlatform)
 				if (getApp().globalData.isSearch) {
 					// 如果是查询状态，则关闭其他页面
