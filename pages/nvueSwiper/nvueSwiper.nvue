@@ -74,15 +74,15 @@
 							<image v-if="item.isShowProgressBarTime == false" @click="tozuozhe" class="userAvatar"
 								:src="item.avatar" mode="aspectFill"></image>
 							<!-- 2.点赞 -->
-							<view v-if="item.isShowProgressBarTime == false" @click="cLike(item.like);"
+							<view v-if="item.isShowProgressBarTime == false" @click="cLike(item.islike);"
 								style="opacity: 0.9; margin-top: 17px;">
-								<image v-if="item.like" src="@/static/img/index/xin.png"
+								<image v-if="item.islike" src="@/static/img/index/xin.png"
 									style="width: 40px; height: 40px; position: absolute; right: 6px;"></image>
-								<image v-if="!item.like" src="@/static/img/index/xin-2.png"
+								<image v-if="!item.islike" src="@/static/img/index/xin-2.png"
 									style="width: 40px; height: 40px; position: absolute; right: 6px;"></image>
 								<text
 									style="color: #FFFFFF; margin-top: 5px; font-size: 14px; text-align: center; margin-top: 40px; font-weight: bold;"
-									:class="{'likeNumActive':item.like}">{{item.like_n}}</text>
+									:class="{'likeNumActive':item.islike}">{{item.likeCounts}}</text>
 							</view>
 							<!-- 3.评论 -->
 							<view v-if="item.isShowProgressBarTime == false" class="comment" @click="toComment(i)"
@@ -97,8 +97,6 @@
 								style="opacity: 0.9; margin-top: 17px;">
 								<image src="@/static/img/index/share-fill.png"
 									style="width: 40px; height: 40px; position: absolute; right: 5px;"></image>
-								<text
-									style="color: #FFFFFF; margin-top: 5px; font-size: 14px; text-align: center; font-weight: bold; margin-top: 40px;">分享</text>
 							</view>
 						</view>
 						<!-- 最底下的文字部分 -->
@@ -191,7 +189,9 @@
 	export default {
 		data() {
 			return {
+				baseUrl: getApp().globalData.baseUrl,
 				fileUrl: getApp().globalData.fileUrl,
+				userInfo: getApp().globalData.getGlobalUserInfo(),
 				//下面打🌟号的是必须要的基础字段
 				//下面打💗号的是拥有滑动条的必须字段
 				dataList: [], //用于数据循环的列表🌟💗
@@ -340,7 +340,7 @@
 				console.log("播放结束")
 				console.log(typeof(id))
 				uni.request({
-					url: getApp().globalData.baseUrl + '/video/saveHistory',
+					url: this.baseUrl + '/video/saveHistory',
 					method: 'POST',
 					data: {
 						videoId: id,
@@ -384,7 +384,7 @@
 					// data:{
 					// 	info: 'get_video'
 					// },
-					url: getApp().globalData.baseUrl + '/video/showAllVideos',
+					url: this.baseUrl + '/video/showAllVideos',
 					method: "POST",
 					header: {
 						'content-type': 'application/json',
@@ -399,7 +399,7 @@
 						for (let i = 0; i < msg.length; i++) {
 							this.dataList.push(msg[i])
 						}
-						console.log(this.dataList)
+						// console.log(this.dataList)
 					}
 				})
 			},
@@ -552,12 +552,7 @@
 				// 这个方法主要就是用来第一次进入视频播放时用来处理的
 				// this.dataList = userList;//这个就是赋值加载视频啦
 				uni.request({
-					// url: 'https://bdb24c6d-8c19-4f80-8e7e-c9c9f037f131.bspapp.com/video',
-					// method: 'POST',
-					// data:{
-					// 	info: 'get_video'
-					// },
-					url: getApp().globalData.baseUrl + '/video/showAllVideos',
+					url: this.baseUrl + '/video/showAllVideos',
 					method: "POST",
 					header: {
 						'content-type': 'application/json',
@@ -580,6 +575,7 @@
 						setTimeout(() => {
 							this.dataList[0].playIng = true
 						}, 500)
+						/*这里只加载1个视频所以不需要
 						var p = 0
 						setTimeout(() => {
 							++p
@@ -587,10 +583,10 @@
 							setTimeout(() => {
 								uni.createVideoContext(this.dataList[p].id, this).seek(0)
 								uni.createVideoContext(this.dataList[p].id, this).pause()
-								console.log('预加载第' + (p + 1) + '个视频：' + this.dataList[p]
-									.id)
+								console.log('预加载第' + (p + 1) + '个视频：' + this.dataList[p].id)
 							}, 2000)
 						}, 50)
+						*/
 					}
 				})
 			},
@@ -671,13 +667,57 @@
 					url: '../nvueSwiper/nvueSwiper'
 				})
 			},
-			cLike(sss) {
-				this.dataList[this.k].like = !this.dataList[this.k].like
-				const video = this.dataList[this.k];
-				sss ? video.like_n -= 1 : video.like_n += 1;
-				/*
-				点赞
-				*/
+			cLike(sss) { //点赞
+				let userId = this.userInfo.id
+				let videoId = this.dataList[this.k].id
+				let videoCreaterId = this.dataList[this.k].userId
+				let url = this.baseUrl + '/video/userLike?userId=' + userId + '&videoId=' + videoId + '&videoCreaterId=' +
+					videoCreaterId
+				if (sss) {
+					url = this.baseUrl + '/video/userUnlike?userId=' + userId + '&videoId=' + videoId +
+						'&videoCreaterId=' +
+						videoCreaterId
+				}
+				uni.request({
+					url: url,
+					method: 'POST',
+					header: {
+						'content-type': 'application/json',
+						'x-token': getApp().globalData.getGlobalToken()
+					},
+					success: (res) => {
+						this.clickLoading = false
+						if (res.data.code === 200) {
+							this.dataList[this.k].islike = !this.dataList[this.k].islike
+							const video = this.dataList[this.k];
+							if (!sss) {
+								video.likeCounts++
+								uni.showToast({
+									title: '点赞成功',
+									icon: 'none',
+									duration: 1000
+								})
+							} else {
+								if (video.likeCounts > 0) {
+									video.likeCounts--
+									uni.showToast({
+										title: '取消点赞',
+										icon: 'none',
+										duration: 1000
+									})
+								}
+							}
+						
+						}
+					},
+					fail: () => {
+						uni.showToast({
+							title: '点赞失败',
+							icon: 'none',
+							duration: 1000
+						})
+					}
+				})
 			},
 			moveHandle() {},
 			closeScrollview() {
