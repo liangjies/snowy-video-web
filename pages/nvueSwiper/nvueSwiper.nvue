@@ -49,14 +49,14 @@
 							<video v-if="Math.abs(k-i)<=1" :ref="'item'+i" :id="item.id" :loop="true"
 								:src="item.isLocal ? fileUrl + item.videoPath: item.videoPath" :muted="item.isplay"
 								@play="playIngs(i)" :enable-progress-gesture="false" :page-gesture="false"
-								:controls="false" :http-cache="false" :show-loading="false" :show-fullscreen-btn="false"
+								:controls="false" :http-cache="true" :show-loading="false" :show-fullscreen-btn="false"
 								:show-center-play-btn="false" :style="boxStyle" :object-fit="object_fit"
 								@timeupdate="timeupdate($event,i)" :codec="hardware"></video>
 							<!-- 这里是封面 -->
-							<image v-if="!item.playIng"
+							<!-- 							<image v-if="!item.playIng"
 								:src="item.coverPath+'?x-oss-process=video/snapshot,t_100,f_jpg'" :mode="mode"
 								:style="'width: '+ windowWidth +'px; height: '+ (wHeight - deleteHeight) +'px; position: absolute;'">
-							</image>
+							</image> -->
 							<!-- 
 							mode: 图片裁剪、缩放的模式
 							mode 有 14 种模式，其中 5 种是缩放模式，9 种是裁剪模式。
@@ -69,6 +69,16 @@
 							<image v-if="item.state=='pause'" class="playState" src="@/static/img/index/play.png">
 							</image>
 						</view>
+						
+						<!-- 最底下的文字部分 -->
+						<view class="content"
+							v-if="dataList.length !== 0 && dataList[k].isShowProgressBarTime == false">
+							<text class="userName"
+								:style="'width: '+ (windowWidth - 90) +'px;'">{{item.videoDesc}}</text>
+							<text class="words"
+								:style="'width: '+ (windowWidth - 90) +'px;'">{{item.nickname}}-{{k+1}}</text>
+						</view>
+						
 						<view class="userInfo">
 							<!-- 1.头像 -->
 							<image v-if="item.isShowProgressBarTime == false" @click="tozuozhe" class="userAvatar"
@@ -81,32 +91,24 @@
 								<image v-if="!item.islike" src="@/static/img/index/xin-2.png"
 									style="width: 40px; height: 40px; position: absolute; right: 6px;"></image>
 								<text
-									style="color: #FFFFFF; margin-top: 5px; font-size: 14px; text-align: center; margin-top: 40px; font-weight: bold;"
+									style="color: #FFFFFF; margin-top: 5px; right: 6px; font-size: 14px; text-align: center; margin-top: 40px; font-weight: bold;"
 									:class="{'likeNumActive':item.islike}">{{item.likeCounts}}</text>
 							</view>
 							<!-- 3.评论 -->
-							<view v-if="item.isShowProgressBarTime == false" class="comment" @click="toComment(i)"
-								style="opacity: 0.9; margin-top: 17px;">
+							<view v-if="item.isShowProgressBarTime == false" class="comment"
+								@click="toComment(item.id)" style="opacity: 0.9; margin-top: 17px;">
 								<image src="@/static/img/index/liaotian-2.png"
-									style="width: 35px; height: 35px; position: absolute; right: 7px;"></image>
+									style="width: 40px; height: 40px; position: absolute; right: 7px;"></image>
 								<text
-									style="color: #FFFFFF; margin-top: 5px; font-size: 14px; font-weight: bold; text-align: center; margin-top: 40px;">{{item.sms_n}}</text>
+									style="color: #FFFFFF; margin-top: 5px; font-size: 14px; font-weight: bold; text-align: center"></text>
 							</view>
 							<!-- 4.分享 -->
-							<view v-if="item.isShowProgressBarTime == false" @click="share"
+							<!-- 暂不用 -->
+							<!--<view v-if="item.isShowProgressBarTime == false" @click="share"
 								style="opacity: 0.9; margin-top: 17px;">
 								<image src="@/static/img/index/share-fill.png"
 									style="width: 40px; height: 40px; position: absolute; right: 5px;"></image>
-							</view>
-						</view>
-						<!-- 最底下的文字部分 -->
-						<view class="content"
-							v-if="dataList.length !== 0 && dataList[k].isShowProgressBarTime == false">
-							<text class="userName"
-								:style="'width: '+ (windowWidth - 90) +'px;'">{{item.videoDesc}}</text><!-- i={{i}} -->
-							<text class="words"
-								:style="'width: '+ (windowWidth - 90) +'px;'">{{item.nickname}}-{{k+1}}</text>
-							<!-- k={{k}} -->
+							</view> -->
 						</view>
 						<!-- 1.视频预览时的图片，currenttimes：就是获取当前滑块的时间点，如果不需要，可以注释掉 -->
 						<!-- 2.如果使用下面的视频预览的话要注意的是视频链接最好是阿里云上的，因为
@@ -114,11 +116,11 @@
 								这个是阿里云的东西，至于其他的视频截帧我还没有试过。
 								-->
 						<!-- 3.阿里云视频截帧地址：https://help.aliyun.com/document_detail/64555.html -->
-						<image v-if="item.isShowimage == true"
+						<!-- 						<image v-if="item.isShowimage == true"
 							:src="item.src+'?x-oss-process=video/snapshot,t_'+ currenttimes +'000,f_jpg'"
 							mode="aspectFill"
 							:style="'width: 120upx; height: 160upx; border-radius: 10upx; position: absolute; bottom: '+ (ProgressBarBottom + 160) +'upx; left: '+ (currentPositions - 15) +'px;'">
-						</image>
+						</image> -->
 					</div>
 				</cell>
 			</list>
@@ -337,8 +339,6 @@
 		onReady() {},
 		methods: {
 			SaveHistory(id) {
-				console.log("播放结束")
-				console.log(typeof(id))
 				uni.request({
 					url: this.baseUrl + '/video/saveHistory',
 					method: 'POST',
@@ -379,11 +379,6 @@
 				console.log("数据加载完再向后端发送数据")
 				console.log("wHeight", this.wHeight)
 				uni.request({
-					// url: 'https://bdb24c6d-8c19-4f80-8e7e-c9c9f037f131.bspapp.com/video',
-					// method: 'POST',
-					// data:{
-					// 	info: 'get_video'
-					// },
 					url: this.baseUrl + '/video/showAllVideos',
 					method: "POST",
 					header: {
@@ -565,6 +560,8 @@
 						var msg = res.data.data.list
 						// console.log(msg)
 						this.dataList = msg
+						// 为防止重复先记录
+						this.SaveHistory(this.dataList[0].id)
 						this.dataList[0].state = "play";
 						setTimeout(() => {
 							//这里的延迟是为了避免执行时间太快而直接跳过执行的 bug
@@ -620,6 +617,7 @@
 				}
 			},
 			toComment(index) {
+				// console.log("toComment", index)
 				// 注意点击评论之后会执行这里
 				/*
 				（1）先加载缓冲
@@ -638,33 +636,13 @@
 					position: 'bottom',
 					duration: 300
 				})
-				uni.setStorageSync("videoID", this.dataList[index].id);
-				this.$refs.pinglun.open('bottom')
+				// uni.setStorageSync("videoID", index);
+				// this.$refs.pinglun.open('bottom')
 			},
 			share() {
 				uni.showToast({
 					title: '分享',
 					icon: 'none'
-				})
-			},
-			wxh5Video() {
-				uni.navigateTo({
-					url: '../wxh5previewVideo/wxh5previewVideo'
-				})
-			},
-			previewVideo() {
-				uni.navigateTo({
-					url: '../previewVideo/previewVideo'
-				})
-			},
-			toTwoVideo() {
-				uni.navigateTo({
-					url: '../new_index/new_index'
-				})
-			},
-			tolistVideo() {
-				uni.navigateTo({
-					url: '../nvueSwiper/nvueSwiper'
 				})
 			},
 			cLike(sss) { //点赞
@@ -707,7 +685,7 @@
 									})
 								}
 							}
-						
+
 						}
 					},
 					fail: () => {
@@ -755,18 +733,19 @@
 	.playState {
 		width: 160rpx;
 		height: 160rpx;
-		opacity: 0.2;
+		opacity: 0.5;
 	}
 
 	.userInfo {
 		position: absolute;
-		bottom: 110px;
+		bottom: 80px;
 		right: 10px;
 		flex-direction: column;
 
 	}
 
 	.userAvatar {
+		right: 6px;
 		border-radius: 500%;
 		margin-bottom: 15px;
 		border-style: solid;
@@ -775,8 +754,8 @@
 	}
 
 	.userAvatar {
-		width: 100rpx;
-		height: 100rpx;
+		width: 40px;
+		height: 40px;
 	}
 
 	.likeIco,

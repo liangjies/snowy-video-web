@@ -5,7 +5,7 @@
 				<view class="cu-item shadow">
 					<view class="image"
 						style="height: 450rpx; width: 100%;background-repeat: no-repeat; background-size: cover;"
-						:style="{'background-image':'url(' + fileUrl + item.coverPath + ')'}">
+						:style="{'background-image':'url(' + (item.isLocal ? fileUrl + item.coverPath : item.coverPath) + ')'}">
 						<!-- 使用 image 可能造成手机闪屏 -->
 						<!-- <image :src="fileUrl + item.coverPath" mode="aspectFill" style="height: 100%; width: 100%;">
 						</image> -->

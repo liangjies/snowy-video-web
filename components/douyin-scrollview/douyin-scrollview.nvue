@@ -4,21 +4,11 @@
 		<image @click="closeSheet" src="@/static/douyin/cuowu.png" style="width: 28upx; height: 28upx; opacity: 0.6; position: absolute; right: 30upx; margin-top: 30upx;"></image>
 		<text style="font-size: 12px; font-weight: bold; text-align: center; color: #FFFFFF;">{{pinlunNum}}条评论</text>
 		<!-- 
-		 
 		 评论内容
-		 
 		 目前仅适配了 App
-		 
 		 后期会继续优化
-		 
-		 
-		 
 		 · 项目使用真实数据
-		 
 		 · 由于项目使用的是 nvue 所以摒弃了 bug 很多的 rich-text
-		 
-		 
-		 
 		 -->
 		<view :style="'width: '+ Width +'px; height: '+ (Height/num) +'px; margin-top: 20upx; background-color: #242424; display: flex; flex-direction: column;'">
 			<text v-if="pinlunList.length == 0" :style="'font-size: 14px; font-weight: bold; color: #a3a1a4; margin-top: 150upx; margin-left: '+ (Width/2.9) +'px; position: absolute;'">～ 快来评论吧 ～</text>
@@ -37,12 +27,10 @@
 									<text style="font-size: 8px; font-weight: bold; padding: 5upx; padding-left: 8upx; padding-right: 8upx; font-weight: bold; color: #FFFFFF;">作者</text>
 								</view>
 							</view>
-							<!-- 5. 
-							
+							<!-- 5. 	
 							由于 rich-text 有很多 bug 
 							所以这里已经摒弃了，
-							使用自研文本解析器 
-							
+							使用自研文本解析器 		
 							-->
 							<view v-if="list.pinlunContent.length !== 0" @click="huifu(index)" :style="'width: '+ (Width*0.78) +'px; display: flex; flex-direction: row; flex-wrap: wrap; margin-top: 14upx;'">
 								<block v-for="(lili,inde) in list.pinlunContent[0].children">
