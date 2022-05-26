@@ -565,6 +565,8 @@
 			}
 			// 4.获取当前 视频 ID
 			this.videoID = uni.getStorageSync("videoID");
+			// 测试数据
+			this.videoID = '60ee559d9dad850001bf5956'
 			// 5.获取当前 用户 ID
 			this.userID = uni.getStorageSync("user")._id;
 			// 6.获取评论信息
@@ -636,6 +638,7 @@
 			*/ 
 			getnewpinlun(){
 				// 这里是对评论信息做处理
+				console.log(this.videoID)
 				uni.request({
 					url: 'https://bdb24c6d-8c19-4f80-8e7e-c9c9f037f131.bspapp.com/video',
 					method: 'POST',

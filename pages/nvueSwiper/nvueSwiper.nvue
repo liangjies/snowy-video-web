@@ -636,8 +636,8 @@
 					position: 'bottom',
 					duration: 300
 				})
-				// uni.setStorageSync("videoID", index);
-				// this.$refs.pinglun.open('bottom')
+				uni.setStorageSync("videoID", index);
+				this.$refs.pinglun.open('bottom')
 			},
 			share() {
 				uni.showToast({

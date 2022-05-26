@@ -42,7 +42,11 @@
 				uni.redirectTo({
 					url:'../../pages/video/videoSingle?videoItem=' + JSON.stringify(this.video) + '&isMine=' + isMine + '&isDynamic=' + isDynamic
 				})
+				
+				
+				
 			}
+			
 		},
 	}
 </script>
