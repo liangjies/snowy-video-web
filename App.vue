@@ -2,10 +2,10 @@
 	import Vue from 'vue'
 	export default {
 		globalData: {
-			// baseUrl: 'http://106.15.38.136:8080/video',
-			// fileUrl: 'http://106.15.38.136:8080',
-			baseUrl: 'http://192.168.10.168:8000',
-			fileUrl: 'http://192.168.10.168:8000/videosPath',
+			baseUrl: 'http://video.icewx.com/apis',
+			fileUrl: 'http://video.icewx.com/videosPath',
+			// baseUrl: 'http://192.168.10.168:8000',
+			// fileUrl: 'http://192.168.10.168:8000/videosPath',
 			searchInfo: {},
 			videoList: [],
 			currentPage: 0,
