@@ -59,8 +59,12 @@
 					return
 				}
 				uni.showLoading({
-					title: '请稍等...'
+					title: '暂不开放注册！请以demo账号登录'
 				})
+				// uni.showLoading({
+				// 	title: '请稍等...'
+				// })
+				/*
 				uni.request({
 					url: getApp().globalData.baseUrl + '/regist',
 					method: "POST",
@@ -89,6 +93,7 @@
 						}
 					}
 				})
+				*/
 			}
 		}
 	}

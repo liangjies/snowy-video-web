@@ -32,8 +32,8 @@
 	export default {
 		data() {
 			return {
-				username: '',
-				password: ''
+				username: 'demo',
+				password: 'demo'
 			}
 		},
 		onLoad() {
